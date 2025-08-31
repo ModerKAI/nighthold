@@ -89,7 +89,7 @@ export default function CountdownTimer() {
           transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
           className="text-lg md:text-xl text-cyberpunk-neon mb-4 opacity-90"
         >
-          Don't miss out — limited spots available and disappearing fast!
+          Don&apos;t miss out — limited spots available and disappearing fast!
         </motion.p>
 
         <motion.p

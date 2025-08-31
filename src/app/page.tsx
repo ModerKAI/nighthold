@@ -304,7 +304,7 @@ export default function Home() {
           transition={{ duration: 1 }}
           className="text-3xl md:text-5xl font-bold text-cyberpunk-blue mb-12 text-center"
         >
-          Trading Skills You'll Master
+          Trading Skills You&apos;ll Master
         </motion.h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
           {[1,2,3].map((i) => (
