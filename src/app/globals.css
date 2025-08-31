@@ -1,0 +1,98 @@
+/* Скрыть скроллбар на всех устройствах */
+body, html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+body::-webkit-scrollbar, html::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+/* Скрыть скроллбар на конкретных контейнерах */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: none;    /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar { display: none; }
+
+@import "tailwindcss";
+
+:root {
+  /* Black-green crypto palette */
+  --cyberpunk-dark: #0A141E; /* глубокий чёрно-зелёный */
+  --cyberpunk-dark2: #132A22; /* дополнительный глубокий зелёный */
+  --cyberpunk-neon: #EAF5FF;
+  --cyberpunk-pink: #00FFC2; /* mint accent */
+  --cyberpunk-blue: #00E5AA; /* зелёно-циановый */
+  --cyberpunk-yellow: #F2A900;
+  --cyberpunk-green: #39ff14;
+}
+
+body {
+  background: var(--cyberpunk-dark) url('/media/bg-cyberpunk.jpg') no-repeat center center fixed;
+  background-size: cover;
+  color: var(--cyberpunk-neon);
+  font-family: 'Press Start 2P', monospace, Arial, Helvetica, sans-serif;
+}
+
+/* Едва заметные горизонтальные линии для глубины */
+/* убран overlay */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.text-cyberpunk-pink { color: var(--cyberpunk-pink); }
+.text-cyberpunk-blue { color: var(--cyberpunk-blue); }
+.text-cyberpunk-yellow { color: var(--cyberpunk-yellow); }
+.text-cyberpunk-green { color: var(--cyberpunk-green); }
+.text-cyberpunk-neon { color: var(--cyberpunk-neon); }
+.bg-cyberpunk-dark { background: var(--cyberpunk-dark); }
+.bg-cyberpunk-pink { background: var(--cyberpunk-pink); }
+.bg-cyberpunk-blue { background: var(--cyberpunk-blue); }
+.bg-cyberpunk-yellow { background: var(--cyberpunk-yellow); }
+.shadow-cyberpunk {
+  box-shadow: 0 0 16px rgba(0,255,194,.45), 0 0 32px rgba(0,229,255,.30);
+}
+.drop-shadow-cyberpunk {
+  filter: drop-shadow(0 0 8px rgba(0,255,194,.55)) drop-shadow(0 0 16px rgba(0,229,255,.35));
+}
+
+.drop-shadow-glow {
+  filter: drop-shadow(0 0 8px rgba(0,255,153,.55)) drop-shadow(0 0 16px rgba(0,224,255,.35));
+}
+
+/* Неоновый ховер для ссылок меню */
+.neon-hover {
+  transition: color .2s ease, filter .2s ease;
+}
+.neon-hover:hover,
+.neon-hover:focus-visible {
+  color: var(--cyberpunk-yellow);
+  filter: drop-shadow(0 0 8px rgba(0,255,194,.55)) drop-shadow(0 0 16px rgba(0,229,255,.35));
+  outline: none;
+}
+
+/* Crypto grid + radial glows */
+
+
+/* Gradient border utility */
+.border-crypto-gradient {
+  border: 1px solid transparent;
+  border-image: linear-gradient(90deg, var(--cyberpunk-blue), var(--cyberpunk-pink)) 1;
+}
+
+/* Crypto button */
+.btn-crypto {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: .6rem 1.1rem;
+  border-radius: 9999px;
+  color: #051018;
+  background: linear-gradient(90deg, var(--cyberpunk-pink), var(--cyberpunk-blue));
+  box-shadow: 0 0 18px rgba(0,255,194,.35), 0 0 38px rgba(0,229,255,.25);
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+.btn-crypto:hover { filter: brightness(1.06); box-shadow: 0 0 22px rgba(0,255,194,.5), 0 0 44px rgba(0,229,255,.35); }
+.btn-crypto:active { transform: translateY(1px); }

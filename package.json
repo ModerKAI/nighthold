@@ -1,0 +1,41 @@
+{
+  "name": "lending",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --turbopack",
+    "dev:ipv4": "next dev --turbopack -H 127.0.0.1 -p 3010",
+    "dev:3011": "next dev --turbopack -H 127.0.0.1 -p 3011",
+    "dev:localhost": "next dev --turbopack -H localhost -p 3012",
+    "dev:open": "next dev --turbopack -H 0.0.0.0 -p 3020",
+    "dev:auto": "node scripts/next-auto.js dev",
+    "build": "next build --turbopack",
+    "start": "next start",
+    "start:ipv4": "next start -H 127.0.0.1 -p 3010",
+    "start:localhost": "next start -H localhost -p 3012",
+    "start:open": "next start -H 0.0.0.0 -p 3020",
+    "start:auto": "node scripts/next-auto.js start",
+    "preview:open": "npm run build && npm run start:open",
+    "preview:ipv4": "npm run build && npm run start:ipv4",
+    "preview:auto": "npm run build && npm run start:auto",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "framer-motion": "^12.23.12",
+    "lucide-react": "^0.542.0",
+    "next": "15.5.2",
+    "react": "19.1.0",
+    "react-dom": "19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
