@@ -11,41 +11,90 @@ const steps = [
   { title: "Results", desc: "Achieve stable and predictable trading outcomes with minimized risk" },
 ];
 
-export default function ScrollPinSector() {
+interface ScrollPinSectorProps {
+  isMobile?: boolean;
+}
+
+export default function ScrollPinSector({ isMobile = false }: ScrollPinSectorProps) {
   const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return <div className="min-h-screen w-full" />; // Placeholder для SSR
+  }
+
+  return <ScrollPinSectorContent isMobile={isMobile} />;
+}
+
+function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
   const containerRef = useRef<HTMLDivElement>(null);   
+  const mobileScrollRef = useRef<HTMLDivElement>(null); // Ref для мобильного скролла
   const [currentStep, setCurrentStep] = useState(0);
   const [lastCompletedStep, setLastCompletedStep] = useState(0); // Запоминаем последний пройденный шаг
   const [isLocked, setIsLocked] = useState(false);
   const [, setIsInViewport] = useState(false);
   const [recentlyUnlocked, setRecentlyUnlocked] = useState(false);
+  const [mobileActiveStep, setMobileActiveStep] = useState(0); // Активный шаг для мобильных
   const [isAnimationActive, setIsAnimationActive] = useState(false);
   const [frozenPosition, setFrozenPosition] = useState<number | null>(null);
 
+  // Отслеживание скролла для мобильной версии
   useEffect(() => {
-    setMounted(true);
-  }, []);
+    if (!isMobile || !mobileScrollRef.current) return;
+
+    const handleScroll = () => {
+      const container = mobileScrollRef.current;
+      if (!container) return;
+
+      const scrollLeft = container.scrollLeft;
+      const cardWidth = 288; // w-72 = 288px (18rem * 16px)
+      const spacing = 16; // space-x-4 = 16px
+      const totalCardWidth = cardWidth + spacing;
+      
+      // Вычисляем активный шаг на основе позиции скролла
+      const activeIndex = Math.round(scrollLeft / totalCardWidth);
+      const clampedIndex = Math.max(0, Math.min(activeIndex, steps.length - 1));
+      
+      if (clampedIndex !== mobileActiveStep) {
+        setMobileActiveStep(clampedIndex);
+      }
+    };
+
+    const container = mobileScrollRef.current;
+    container.addEventListener('scroll', handleScroll);
+    
+    return () => {
+      container.removeEventListener('scroll', handleScroll);
+    };
+  }, [isMobile, mobileActiveStep]);
+  
   const [rotationCount, setRotationCount] = useState(0);
   const [isFrozen, setIsFrozen] = useState(false); // Состояние фиксации
-  
-  useEffect(() => {
-    setMounted(true);
-  }, []);
   
   // Motion values для плавного движения
   const xMotion = useMotionValue(0);
   const xSpring = useSpring(xMotion, { damping: 35, stiffness: 300 }); // Быстрая и плавная анимация
   
+  // Используем useScroll без условий
   const { scrollYProgress } = useScroll({
-    target: mounted ? containerRef : undefined,
+    target: containerRef,
     offset: ["start center", "end center"]
   });
   
   // Основное горизонтальное движение
   const x = useTransform(scrollYProgress, [0, 1], [0, -83.33]);
-  // const xPercent = useTransform(x, (value) => `${value}%`);
-  // Переменная x используется косвенно через xSpring
-  console.log('X value for debugging:', x.get());
+  
+  // Подключаем x к xMotion для плавной анимации
+  useEffect(() => {
+    const unsubscribe = x.on('change', (value) => {
+      xMotion.set(value);
+    });
+    return unsubscribe;
+  }, [x, xMotion]);
+  
   const xSpringPercent = useTransform(xSpring, (value) => `${value}%`);
 
   // Отслеживание видимости секции
@@ -231,7 +280,7 @@ export default function ScrollPinSector() {
         element.dataset.savedScrollY = scrollY.toString();
       }
     }
-  }, [isLocked, recentlyUnlocked]);
+  }, [isLocked, recentlyUnlocked, lastCompletedStep]);
 
   // Event listeners
   useEffect(() => {
@@ -317,8 +366,131 @@ export default function ScrollPinSector() {
     return () => clearInterval(interval);
   }, [isLocked, isAnimationActive]);
 
-  if (!mounted) {
-    return <div className="min-h-screen w-full" />; // Placeholder для SSR
+  // Мобильная версия с боковым скроллом
+  if (isMobile) {
+    return (
+      <section 
+        id="section-3" 
+        className="relative w-full py-16 bg-gradient-to-b from-black/50 to-cyberpunk-dark/30 min-h-screen"
+        suppressHydrationWarning
+      >
+        {/* Заголовок с эффектом */}
+        <div className="text-center mb-12 px-4">
+          <motion.h2 
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="text-3xl font-extrabold text-cyberpunk-green mb-4"
+            style={{
+              textShadow: '0 0 20px rgba(0, 255, 194, 0.5), 0 0 40px rgba(0, 255, 194, 0.3)'
+            }}
+          >
+            6 Steps to Success
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="text-cyberpunk-neon/70 text-sm max-w-xs mx-auto"
+          >
+            Swipe to explore our proven methodology
+          </motion.p>
+        </div>
+
+        {/* Горизонтальный скролл с улучшенным дизайном */}
+        <div 
+          ref={mobileScrollRef}
+          className="overflow-x-auto pb-6 px-4" 
+          style={{ scrollSnapType: 'x mandatory' }}
+        >
+          <div className="flex space-x-4 min-w-max">
+            {steps.map((step, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.6, delay: index * 0.1 }}
+                className="flex-shrink-0 w-72 h-80 relative group"
+                style={{ scrollSnapAlign: 'start' }}
+              >
+                {/* Основная карточка */}
+                <div className="h-full bg-gradient-to-br from-cyberpunk-dark/95 to-black/90 rounded-2xl border border-cyberpunk-green/20 p-6 flex flex-col justify-between relative overflow-hidden backdrop-blur-sm">
+                  
+                  {/* Фоновый эффект */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyberpunk-green/5 to-cyberpunk-blue/5 opacity-0 group-active:opacity-100 transition-opacity duration-300"></div>
+                  
+                  {/* Номер шага с анимацией */}
+                  <div className="absolute top-4 right-4 w-10 h-10 rounded-full bg-gradient-to-r from-cyberpunk-green/30 to-cyberpunk-blue/30 flex items-center justify-center">
+                    <span className="text-cyberpunk-green font-bold text-lg">{index + 1}</span>
+                  </div>
+
+                  {/* Иконка шага */}
+                  <div className="w-12 h-12 rounded-xl bg-cyberpunk-green/10 flex items-center justify-center mb-4">
+                    <div className="w-6 h-6 bg-cyberpunk-green/30 rounded-sm"></div>
+                  </div>
+
+                  {/* Контент */}
+                  <div className="flex-1">
+                    <h3 className="text-xl font-bold text-cyberpunk-pink mb-3 leading-tight">
+                      {step.title}
+                    </h3>
+                    <p className="text-cyberpunk-neon/80 text-sm leading-relaxed mb-4">
+                      {step.desc}
+                    </p>
+                  </div>
+
+                  {/* Прогресс бар */}
+                  <div className="mt-auto">
+                    <div className="w-full h-1 bg-cyberpunk-dark rounded-full overflow-hidden">
+                      <motion.div 
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${((index + 1) / steps.length) * 100}%` }}
+                        transition={{ duration: 1, delay: 0.5 }}
+                        className="h-full bg-gradient-to-r from-cyberpunk-green to-cyberpunk-blue rounded-full"
+                      ></motion.div>
+                    </div>
+                    <div className="flex justify-between items-center mt-2">
+                      <span className="text-xs text-cyberpunk-green/60">Step {index + 1}</span>
+                      <span className="text-xs text-cyberpunk-neon/60">{Math.round(((index + 1) / steps.length) * 100)}%</span>
+                    </div>
+                  </div>
+
+                  {/* Декоративные элементы */}
+                  <div className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-cyberpunk-green/20 to-transparent"></div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* Улучшенный индикатор прогресса с анимацией */}
+        <div className="flex justify-center mt-8 px-4">
+          <div className="flex items-center space-x-3 bg-cyberpunk-dark/60 rounded-full px-4 py-2 backdrop-blur-sm border border-cyberpunk-green/20">
+            {steps.map((_, index) => (
+              <motion.div
+                key={index}
+                className="w-2 h-2 rounded-full transition-all duration-500"
+                animate={{
+                  backgroundColor: index === mobileActiveStep ? 'var(--cyberpunk-green)' : 'rgba(0, 255, 194, 0.3)',
+                  scale: index === mobileActiveStep ? 1.2 : 1,
+                  boxShadow: index === mobileActiveStep ? '0 0 10px rgba(0, 255, 194, 0.5)' : '0 0 0px rgba(0, 255, 194, 0)'
+                }}
+                transition={{ duration: 0.3, ease: "easeInOut" }}
+              />
+            ))}
+            <div className="ml-2 text-xs text-cyberpunk-neon/60 flex items-center space-x-1">
+              <span>Step {mobileActiveStep + 1}</span>
+              <motion.span
+                animate={{ x: [0, 3, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              >
+                →
+              </motion.span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   return (

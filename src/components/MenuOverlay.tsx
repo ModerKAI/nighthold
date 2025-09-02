@@ -1,6 +1,6 @@
 "use client";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 type Props = {
   open: boolean;
@@ -8,8 +8,20 @@ type Props = {
 };
 
 export default function MenuOverlay({ open, onClose }: Props) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   function handleNav(toId: string) {
-    return (e: React.MouseEvent<HTMLAnchorElement>) => {
+    return (e: React.MouseEvent<HTMLElement>) => {
       e.preventDefault();
       onClose();
       // Небольшая задержка, чтобы убрать lock и плавно проскроллить
@@ -43,150 +55,189 @@ export default function MenuOverlay({ open, onClose }: Props) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Полноэкранный контент */}
-          <motion.div
-            className="relative w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-10"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.25 }}
+          {/* Кнопка закрыть */}
+          <button
+            aria-label="Close menu"
+            onClick={onClose}
+            className="absolute top-4 right-4 md:top-8 md:right-8 inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/25 hover:border-cyberpunk-pink transition-colors z-70"
           >
-            {/* Кнопка закрыть */}
-            <button
-              aria-label="Close menu"
-              onClick={onClose}
-              className="absolute top-4 right-4 md:top-8 md:right-8 inline-flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-full border border-white/25 hover:border-cyberpunk-pink transition-colors"
-            >
-              <span className="sr-only">Close</span>
-              <div className="relative w-6 h-6">
-                <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-white rotate-45" />
-                <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-white -rotate-45" />
-              </div>
-            </button>
+            <span className="sr-only">Close</span>
+            <div className="relative w-6 h-6">
+              <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-white rotate-45" />
+              <span className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-0.5 bg-white -rotate-45" />
+            </div>
+          </button>
 
-            {/* Левая колонка: крупные пункты */}
-            <motion.nav
-              className="flex flex-col justify-center"
-              initial="hidden"
-              animate="show"
-              variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
-            >
-              {[
-                { id: "section-1", text: "HOME" },
-                { id: "section-2", text: "BLOG" },
-                { id: "contacts", text: "CONTACTS" },
-              ].map((it, i) => (
-                <motion.a
-                  key={i}
-                  href={`#${it.id}`}
-                  variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
-                  className="text-5xl md:text-7xl font-extrabold tracking-wide text-white/90 neon-hover mb-4 md:mb-6"
-                  onClick={handleNav(it.id)}
-                >
-                  {it.text}
-                </motion.a>
-              ))}
-            </motion.nav>
-
-            {/* Правая колонка: единая панель соцсетей */}
+          {/* Мобильная версия - упрощенная */}
+          {isMobile ? (
             <motion.div
-              className="flex items-center lg:items-center"
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
+              className="mobile-menu-simple"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              <div className="w-full border border-white/20 bg-black/40">
-                <div className="grid grid-cols-4">
-                  {[
-                    { label: "INSTAGRAM", icon: InstagramIcon, href: "https://www.instagram.com/nighthold_trading/" },
-                    { label: "TELEGRAM", icon: TelegramIcon, href: "https://t.me/+NUnUvdcg4IBjNDhi" },
-                    { label: "GMAIL", icon: GmailIcon, href: "mailto:melissaBmurray122@gmail.com" },
-                    { label: "YOUTUBE", icon: YoutubeIcon, href: "" },
-                  ].map((s, idx) => (
-                    s.href ? (
-                      <motion.a
-                        key={idx}
-                        href={s.href}
-                        target={s.href.startsWith('mailto:') ? undefined : "_blank"}
-                        rel={s.href.startsWith('mailto:') ? undefined : "noopener noreferrer"}
-                        className={`flex flex-col items-start justify-between p-6 min-h-[200px] relative overflow-hidden ${idx !== 0 ? 'border-l border-white/15' : ''}`}
-                        whileHover={{ 
-                          scale: 1.02,
-                          backgroundColor: "rgba(255,255,255,0.08)",
-                          transition: { duration: 0.3 }
-                        }}
-                        whileTap={{ scale: 0.98 }}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: idx * 0.1, duration: 0.5 }}
-                      >
-                        <motion.div 
-                          className="opacity-90"
-                          whileHover={{ 
-                            scale: 1.1,
-                            rotate: [0, -5, 5, 0],
-                            transition: { duration: 0.5 }
-                          }}
-                        >
-                          {s.icon()}
-                        </motion.div>
-                        <motion.div 
-                          className="text-white/85 font-bold tracking-widest text-sm mt-8"
-                          whileHover={{ 
-                            y: -2,
-                            color: "#00FFC2",
-                            transition: { duration: 0.3 }
-                          }}
-                        >
-                          {s.label}
-                        </motion.div>
-                        
-                        {/* Hover effect background */}
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-br from-cyberpunk-pink/10 via-cyberpunk-blue/10 to-cyberpunk-green/10"
-                          initial={{ opacity: 0, scale: 0.8 }}
-                          whileHover={{ 
-                            opacity: 1, 
-                            scale: 1,
-                            transition: { duration: 0.3 }
-                          }}
-                        />
-                      </motion.a>
-                    ) : (
-                      <motion.div
-                        key={idx}
-                        className={`flex flex-col items-start justify-between p-6 min-h-[200px] opacity-50 cursor-not-allowed relative ${idx !== 0 ? 'border-l border-white/15' : ''}`}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 0.5, y: 0 }}
-                        transition={{ delay: idx * 0.1, duration: 0.5 }}
-                        whileHover={{ 
-                          opacity: 0.3,
-                          transition: { duration: 0.3 }
-                        }}
-                      >
-                        <motion.div className="opacity-90">
-                          {s.icon()}
-                        </motion.div>
-                        <motion.div className="text-white/85 font-bold tracking-widest text-sm mt-8">
-                          {s.label}
-                        </motion.div>
-                        
-                        {/* Disabled state indicator */}
-                        <motion.div
-                          className="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-600/20"
-                          initial={{ opacity: 0 }}
-                          whileHover={{ 
-                            opacity: 1,
-                            transition: { duration: 0.3 }
-                          }}
-                        />
-                      </motion.div>
-                    )
-                  ))}
-                </div>
+              {/* Кнопка закрытия */}
+              <button
+                onClick={onClose}
+                className="absolute top-6 right-6 text-white text-2xl z-50 w-10 h-10 flex items-center justify-center rounded-full border border-white/30 hover:border-cyberpunk-green hover:text-cyberpunk-green transition-all duration-300"
+              >
+                ✕
+              </button>
+
+              {/* Простая навигация */}
+              <div className="flex flex-col space-y-6 px-4">
+                {[
+                  { id: "section-1", text: "HOME" },
+                  { id: "section-2", text: "BLOG" },
+                  { id: "contacts", text: "CONTACTS" },
+                ].map((item, index) => (
+                  <motion.button
+                    key={item.id}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1, duration: 0.5 }}
+                    onClick={handleNav(item.id)}
+                    className="mobile-nav-simple text-white hover:text-cyberpunk-green transition-all duration-300 font-bold tracking-wider"
+                  >
+                    {item.text}
+                  </motion.button>
+                ))}
               </div>
             </motion.div>
-          </motion.div>
+          ) : (
+            /* Десктопная версия (оригинальная) */
+            <motion.div
+              className="relative w-full h-full grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-10"
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 20 }}
+              transition={{ duration: 0.25 }}
+            >
+              {/* Левая колонка: крупные пункты */}
+              <motion.nav
+                className="flex flex-col justify-center"
+                initial="hidden"
+                animate="show"
+                variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
+              >
+                {[
+                  { id: "section-1", text: "HOME" },
+                  { id: "section-2", text: "BLOG" },
+                  { id: "contacts", text: "CONTACTS" },
+                ].map((it, i) => (
+                  <motion.a
+                    key={i}
+                    href={`#${it.id}`}
+                    variants={{ hidden: { opacity: 0, x: 20 }, show: { opacity: 1, x: 0 } }}
+                    className="text-5xl md:text-7xl font-extrabold tracking-wide text-white/90 neon-hover mb-4 md:mb-6"
+                    onClick={handleNav(it.id)}
+                  >
+                    {it.text}
+                  </motion.a>
+                ))}
+              </motion.nav>
+
+              {/* Правая колонка: единая панель соцсетей */}
+              <motion.div
+                className="flex items-center lg:items-center"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+              >
+                <div className="w-full border border-white/20 bg-black/40">
+                  <div className="grid grid-cols-4">
+                    {[
+                      { label: "INSTAGRAM", icon: InstagramIcon, href: "https://www.instagram.com/nighthold_trading/" },
+                      { label: "TELEGRAM", icon: TelegramIcon, href: "https://t.me/+NUnUvdcg4IBjNDhi" },
+                      { label: "GMAIL", icon: GmailIcon, href: "mailto:melissaBmurray122@gmail.com" },
+                      { label: "YOUTUBE", icon: YoutubeIcon, href: "" },
+                    ].map((s, idx) => (
+                      s.href ? (
+                        <motion.a
+                          key={idx}
+                          href={s.href}
+                          target={s.href.startsWith('mailto:') ? undefined : "_blank"}
+                          rel={s.href.startsWith('mailto:') ? undefined : "noopener noreferrer"}
+                          className={`flex flex-col items-start justify-between p-6 min-h-[200px] relative overflow-hidden ${idx !== 0 ? 'border-l border-white/15' : ''}`}
+                          whileHover={{ 
+                            scale: 1.02,
+                            backgroundColor: "rgba(255,255,255,0.08)",
+                            transition: { duration: 0.3 }
+                          }}
+                          whileTap={{ scale: 0.98 }}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.1, duration: 0.5 }}
+                        >
+                          <motion.div 
+                            className="opacity-90"
+                            whileHover={{ 
+                              scale: 1.1,
+                              rotate: [0, -5, 5, 0],
+                              transition: { duration: 0.5 }
+                            }}
+                          >
+                            {s.icon()}
+                          </motion.div>
+                          <motion.div 
+                            className="text-white/85 font-bold tracking-widest text-sm mt-8"
+                            whileHover={{ 
+                              y: -2,
+                              color: "#00FFC2",
+                              transition: { duration: 0.3 }
+                            }}
+                          >
+                            {s.label}
+                          </motion.div>
+                          
+                          {/* Hover effect background */}
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-br from-cyberpunk-pink/10 via-cyberpunk-blue/10 to-cyberpunk-green/10"
+                            initial={{ opacity: 0, scale: 0.8 }}
+                            whileHover={{ 
+                              opacity: 1, 
+                              scale: 1,
+                              transition: { duration: 0.3 }
+                            }}
+                          />
+                        </motion.a>
+                      ) : (
+                        <motion.div
+                          key={idx}
+                          className={`flex flex-col items-start justify-between p-6 min-h-[200px] opacity-50 cursor-not-allowed relative ${idx !== 0 ? 'border-l border-white/15' : ''}`}
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 0.5, y: 0 }}
+                          transition={{ delay: idx * 0.1, duration: 0.5 }}
+                          whileHover={{ 
+                            opacity: 0.3,
+                            transition: { duration: 0.3 }
+                          }}
+                        >
+                          <motion.div className="opacity-90">
+                            {s.icon()}
+                          </motion.div>
+                          <motion.div className="text-white/85 font-bold tracking-widest text-sm mt-8">
+                            {s.label}
+                          </motion.div>
+                          
+                          {/* Disabled state indicator */}
+                          <motion.div
+                            className="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-600/20"
+                            initial={{ opacity: 0 }}
+                            whileHover={{ 
+                              opacity: 1,
+                              transition: { duration: 0.3 }
+                            }}
+                          />
+                        </motion.div>
+                      )
+                    ))}
+                  </div>
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
         </motion.div>
       )}
     </AnimatePresence>

@@ -16,9 +16,21 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
 
 
-  useEffect(() => { setMounted(true); }, []);
+  useEffect(() => { 
+    setMounted(true);
+    
+    // Детекция мобильного устройства
+    const checkDevice = () => {
+      setIsMobile(window.innerWidth <= 768 || 'ontouchstart' in window);
+    };
+    
+    checkDevice();
+    window.addEventListener('resize', checkDevice);
+    return () => window.removeEventListener('resize', checkDevice);
+  }, []);
 
   useEffect(() => {
     if (!loading) return;
@@ -30,8 +42,13 @@ export default function Home() {
     }
   }, [progress, loading]);
 
+  // Динамические классы для скролла
+  const mainClasses = isMobile 
+    ? "text-cyberpunk-neon w-full overflow-x-hidden relative touch-auto mobile-scroll-fix" 
+    : "text-cyberpunk-neon w-full overflow-x-hidden relative desktop-scroll";
+
   return (
-  <main className="text-cyberpunk-neon w-full overflow-x-hidden relative" suppressHydrationWarning>
+  <main className={mainClasses} suppressHydrationWarning>
       <ClientOnly>
         <SectionNav ids={["section-1","section-2","section-3","section-4","section-5","section-6"]} />
       </ClientOnly>
@@ -171,12 +188,12 @@ export default function Home() {
 
         {/* Текст: чуть меньше и смещён вниз-вправо */}
         <div className="relative z-10 w-full flex justify-end">
-          <div className="max-w-3xl mr-8 mb-12 md:mr-16 md:mb-16 text-right">
+          <div className="max-w-3xl mr-4 mb-8 md:mr-16 md:mb-16 text-right px-4 md:px-0">
             <motion.h1
               initial={{ opacity: 0, y: 60 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 1 }}
-              className="text-3xl md:text-5xl font-extrabold mb-4 text-cyberpunk-pink drop-shadow-cyberpunk"
+              className="text-xl sm:text-2xl md:text-5xl font-extrabold mb-4 text-cyberpunk-pink drop-shadow-cyberpunk leading-tight"
             >
               Learn How Institutional Traders Operate
             </motion.h1>
@@ -188,10 +205,10 @@ export default function Home() {
           initial={{ opacity: 0, x: -30 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.8, duration: 1 }}
-          className="absolute bottom-8 left-8 z-10"
+          className="absolute bottom-4 left-4 md:bottom-8 md:left-8 z-10"
         >
-          <div className="text-cyberpunk-green/80 text-sm md:text-base font-mono tracking-wider">
-            <div className="flex items-center space-x-4">
+          <div className="text-cyberpunk-green/80 text-xs sm:text-sm md:text-base font-mono tracking-wider">
+            <div className="flex items-center space-x-2 md:space-x-4">
               <span className="flex items-center">
                 <span className="text-cyberpunk-pink">15</span>
                 <span className="ml-1">students</span>
@@ -213,9 +230,11 @@ export default function Home() {
       </ClientOnly>
 
       {/* Сектор 3 — Pinned elements / Scroll pinning */}
-      <div className="mb-32 relative">
-        <ScrollPinSector />
-      </div>
+      <ClientOnly>
+        <div className="mb-32 relative">
+          <ScrollPinSector isMobile={isMobile} />
+        </div>
+      </ClientOnly>
 
       {/* Countdown Timer Section */}
       <ClientOnly>
@@ -229,7 +248,7 @@ export default function Home() {
 
       {/* Сектор 6 — Community & Pricing */}
       <ClientOnly>
-        <CommunityPricingSection />
+        <CommunityPricingSection isMobile={isMobile} />
       </ClientOnly>
 
       {/* Сектор 7 — FAQ */}

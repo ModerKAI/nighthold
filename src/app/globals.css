@@ -110,3 +110,192 @@ html {
     linear-gradient(90deg, rgba(0, 229, 255, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
 }
+
+/* Мобильный скролл */
+.mobile-scroll-fix {
+  -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+}
+
+/* Десктопный скролл (без изменений) */
+.desktop-scroll {
+  /* Стандартное поведение для ПК */
+  scroll-behavior: smooth;
+}
+
+/* Медиа-запросы для мобильных устройств */
+@media (max-width: 768px) {
+  .mobile-scroll-fix {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  html, body {
+    -webkit-text-size-adjust: 100%;
+    -webkit-overflow-scrolling: touch;
+    overflow-x: hidden;
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Горизонтальный скролл для мобильных */
+  .overflow-x-auto {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 255, 194, 0.3) transparent;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar {
+    height: 4px;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 2px;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 194, 0.5);
+    border-radius: 2px;
+  }
+  
+  .overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 255, 194, 0.7);
+  }
+  
+  /* Scroll snap для плавного скролла */
+  .scroll-snap-x {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .scroll-snap-start {
+    scroll-snap-align: start;
+  }
+  
+  /* Улучшения для touch взаимодействий */
+  .mobile-card {
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+  }
+  
+  .mobile-card:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+  
+  /* Анимации для мобильных */
+  @keyframes mobile-fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .mobile-animate-in {
+    animation: mobile-fade-in 0.6s ease-out forwards;
+  }
+}
+
+/* Фиксы для мобильного масштабирования */
+@media screen and (max-width: 768px) {
+  html {
+    font-size: 16px; /* Базовый размер шрифта */
+    -webkit-text-size-adjust: 100%;
+    -ms-text-size-adjust: 100%;
+  }
+  
+  body {
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  /* Ограничения для мобильного меню */
+  .mobile-menu-container {
+    max-width: 100vw;
+    max-height: 100vh;
+    overflow: hidden;
+  }
+  
+  /* Адаптивные размеры текста */
+  .mobile-nav-item {
+    font-size: clamp(1.25rem, 4vw, 2rem);
+  }
+  
+  .mobile-social-grid {
+    max-width: 280px;
+    margin: 0 auto;
+  }
+}
+
+/* Дополнительно для очень маленьких экранов */
+@media screen and (max-width: 375px) {
+  .mobile-nav-item {
+    font-size: 1.25rem;
+  }
+  
+  .mobile-social-grid {
+    max-width: 240px;
+  }
+}
+
+/* Фиксы для стабильного мобильного отображения */
+@media screen and (max-width: 768px) {
+  /* Базовые настройки */
+  html, body {
+    font-size: 16px !important;
+    -webkit-text-size-adjust: none !important;
+    -ms-text-size-adjust: none !important;
+    text-size-adjust: none !important;
+    overflow-x: hidden;
+  }
+  
+  /* Мобильное меню - упрощенная версия */
+  .mobile-menu-simple {
+    height: 100vh;
+    height: 100dvh; /* Для современных браузеров */
+    width: 100vw;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.95);
+    backdrop-filter: blur(10px);
+  }
+  
+  /* Стабильные размеры для навигации */
+  .mobile-nav-simple {
+    font-size: clamp(1.5rem, 6vw, 2.5rem) !important;
+    line-height: 1.2;
+    padding: 0.5rem 0;
+    text-align: center;
+    width: 100%;
+  }
+  
+  /* Отключаем всякие transform которые могут сломать масштаб */
+  .mobile-menu-simple * {
+    transform-origin: center center;
+  }
+}
+
+/* Для очень маленьких экранов */
+@media screen and (max-width: 360px) {
+  .mobile-nav-simple {
+    font-size: 1.5rem !important;
+  }
+}
+
+/* Для больших телефонов */
+@media screen and (min-width: 375px) and (max-width: 768px) {
+  .mobile-nav-simple {
+    font-size: 2rem !important;
+  }
+}

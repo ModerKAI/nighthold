@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   description: "NightHold Trading Academy - Master NightHold Concepts",
   keywords: "trading, nighthold, forex, crypto, academy, institutional",
   authors: [{ name: "NightHold Academy" }],
+  viewport: "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover",
   icons: {
     icon: "/media/logo.png",
     shortcut: "/media/logo.png",

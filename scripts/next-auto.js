@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Autostart Next.js with host/port fallback and simple readiness check
-const { spawn } = require('child_process');
+import { spawn } from 'child_process';
 
 const mode = process.argv[2] === 'start' ? 'start' : 'dev';
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
@@ -31,12 +31,12 @@ function runAttempt({ host, port, label }) {
 
     child.stdout.on('data', onData);
     child.stderr.on('data', (b) => process.stderr.write(b.toString()));
-    child.on('exit', (code) => {
+    child.on('exit', () => {
       if (!resolved) resolve(null);
     });
 
     // If not ready within 8s, kill and fallback
-    const t = setTimeout(() => {
+    setTimeout(() => {
       if (!resolved) {
         try { child.kill('SIGTERM'); } catch { /* noop */ }
       }

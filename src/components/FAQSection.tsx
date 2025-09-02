@@ -3,7 +3,7 @@ import { useRef, useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ChevronDown, Zap, Shield, TrendingUp, Clock, Users, Award } from "lucide-react";
+import { ChevronDown, Zap, TrendingUp, Clock, Users, Award } from "lucide-react";
 
 // Регистрируем ScrollTrigger
 if (typeof window !== "undefined") {
@@ -88,11 +88,12 @@ function FAQItem({ item, index, isOpen, onToggle }: FAQItemProps) {
     });
 
     // Анимация появления при скролле
-    ScrollTrigger.create({
-      trigger: itemRef.current,
-      start: "top 85%",
-      onEnter: () => {
-        const masterTl = gsap.timeline();
+    if (typeof window !== 'undefined' && itemRef.current) {
+      ScrollTrigger.create({
+        trigger: itemRef.current,
+        start: "top 85%",
+        onEnter: () => {
+          const masterTl = gsap.timeline();
         
         // Основной контейнер
         masterTl.to(itemRef.current, {
@@ -133,6 +134,7 @@ function FAQItem({ item, index, isOpen, onToggle }: FAQItemProps) {
       },
       once: true
     });
+    }
 
     // Hover эффекты
     const handleMouseEnter = () => {

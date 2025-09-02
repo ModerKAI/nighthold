@@ -87,17 +87,17 @@ export default function TestimonialCard({
         className={`relative backdrop-blur-md border-2 rounded-2xl p-6 md:p-8 h-80 md:h-96 ${backgroundColors[index]} ${borderColors[index]}`}
       >
         {/* Student Header */}
-        <div className="mb-6">
-          <h3 className="text-2xl md:text-3xl font-bold text-cyberpunk-neon">
+        <div className="mb-4 md:mb-6">
+          <h3 className="text-lg sm:text-xl md:text-3xl font-bold text-cyberpunk-neon">
             Student {index + 1}
           </h3>
         </div>
 
         {/* Profit Scale - центральная часть */}
-        <div className="flex-1 flex flex-col justify-center items-center mb-8">
+        <div className="flex-1 flex flex-col justify-center items-center mb-6 md:mb-8">
           {/* Payout Amount с анимацией */}
           <motion.div 
-            className={`text-6xl md:text-7xl font-extrabold mb-2 ${profitColors[index]} drop-shadow-lg`}
+            className={`text-4xl sm:text-5xl md:text-7xl font-extrabold mb-2 ${profitColors[index]} drop-shadow-lg`}
             initial={{ scale: 0.5, opacity: 0 }}
             animate={inView ? { 
               scale: [0.5, 1.2, 1], 
@@ -192,9 +192,9 @@ export default function TestimonialCard({
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between text-sm md:text-base text-cyberpunk-neon/80">
-          <span>{date}</span>
-          <span className="text-cyberpunk-yellow font-medium">✦ Verified Result</span>
+        <div className="flex items-center justify-between text-xs sm:text-sm md:text-base text-cyberpunk-neon/80">
+          <span className="text-xs sm:text-sm">{date}</span>
+          <span className="text-cyberpunk-yellow font-medium text-xs sm:text-sm">✦ Verified Result</span>
         </div>
       </div>
     </motion.div>

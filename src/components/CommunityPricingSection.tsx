@@ -4,6 +4,10 @@ import { motion } from "framer-motion";
 import Counter from "./Counter";
 import ClientOnly from "./ClientOnly";
 
+interface CommunityPricingSectionProps {
+  isMobile?: boolean;
+}
+
 // Community Stats Data
 const communityStats = [
   { label: "Total Profit Generated", value: 1, suffix: "M+", color: "blue" },
@@ -54,7 +58,7 @@ const comparisonFeatures = [
   { feature: "Support Level", starter: "Email", pro: "Priority" }
 ];
 
-export default function CommunityPricingSection() {
+export default function CommunityPricingSection({ isMobile = false }: CommunityPricingSectionProps) {
   const sectionRef = useRef<HTMLDivElement>(null);
   const [mounted, setMounted] = useState(false);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
@@ -357,7 +361,7 @@ export default function CommunityPricingSection() {
           ))}
         </div>
 
-        {/* Simplified Comparison Table */}
+        {/* Адаптивная Comparison Table */}
         <motion.div 
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 30 }}
@@ -365,48 +369,146 @@ export default function CommunityPricingSection() {
           transition={{ duration: 0.5, delay: 0.3 }}
           viewport={{ once: false, margin: "-100px" }}
         >
-          <h3 className="text-3xl md:text-4xl font-bold text-center text-cyberpunk-neon mb-12">
+          <h3 className="text-2xl md:text-4xl font-bold text-center text-cyberpunk-neon mb-8 md:mb-12">
             Feature Comparison
           </h3>
           
-          <div className="overflow-hidden rounded-2xl bg-cyberpunk-dark/50 backdrop-blur-md shadow-2xl">
-            <div className="p-6 md:p-8">
-              {/* Table header */}
-              <div className="comparison-row grid grid-cols-3 gap-4 mb-6 pb-4 border-b border-cyberpunk-pink/30">
-                <div className="text-cyberpunk-neon font-bold text-lg">Feature</div>
-                <div className="text-cyan-300 font-bold text-lg text-center">Starter</div>
-                <div className="text-yellow-300 font-bold text-lg text-center">Mentorship</div>
-              </div>
-
-              {/* Table rows */}
+          {/* Мобильная версия - карточки */}
+          {isMobile ? (
+            <div className="space-y-4 px-4">
               {comparisonFeatures.map((row, index) => (
-                <div 
-                  key={index} 
-                  className={`comparison-row grid grid-cols-3 gap-4 py-4 rounded-lg hover:bg-cyberpunk-neon/5 transition-colors ${index !== comparisonFeatures.length - 1 ? 'border-b border-cyberpunk-neon/10' : ''}`}
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                  className="bg-cyberpunk-dark/70 backdrop-blur-sm rounded-xl border border-cyberpunk-green/20 p-4"
                 >
-                  <div className="text-cyberpunk-neon/90">{row.feature}</div>
-                  <div className="text-center">
-                    {typeof row.starter === 'boolean' ? (
-                      <span className={`inline-block w-6 h-6 rounded-full ${row.starter ? 'bg-cyberpunk-green text-cyberpunk-dark' : 'bg-red-500/20 text-red-400'} flex items-center justify-center text-sm`}>
-                        {row.starter ? '✓' : '✗'}
-                      </span>
-                    ) : (
-                      <span className="text-cyan-300">{row.starter}</span>
-                    )}
+                  {/* Название фичи */}
+                  <h4 className="text-cyberpunk-neon font-bold text-base mb-4 border-b border-cyberpunk-green/20 pb-2">
+                    {row.feature}
+                  </h4>
+                  
+                  {/* Планы в ряд */}
+                  <div className="flex justify-between items-center">
+                    {/* Starter */}
+                    <div className="flex flex-col items-center flex-1">
+                      <div className="text-cyan-300 font-semibold text-sm mb-2">Starter</div>
+                      <div className="flex items-center justify-center">
+                        {typeof row.starter === 'boolean' ? (
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                            row.starter 
+                              ? 'bg-cyberpunk-green text-cyberpunk-dark' 
+                              : 'bg-red-500/20 text-red-400 border border-red-400/30'
+                          }`}>
+                            {row.starter ? '✓' : '✗'}
+                          </div>
+                        ) : (
+                          <span className="text-cyan-300 font-medium text-sm px-2 py-1 bg-cyan-300/10 rounded-md">
+                            {row.starter}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Разделитель */}
+                    <div className="w-px h-12 bg-cyberpunk-green/20 mx-4"></div>
+
+                    {/* Mentorship */}
+                    <div className="flex flex-col items-center flex-1">
+                      <div className="text-yellow-300 font-semibold text-sm mb-2">Mentorship</div>
+                      <div className="flex items-center justify-center">
+                        {typeof row.pro === 'boolean' ? (
+                          <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${
+                            row.pro 
+                              ? 'bg-cyberpunk-green text-cyberpunk-dark' 
+                              : 'bg-red-500/20 text-red-400 border border-red-400/30'
+                          }`}>
+                            {row.pro ? '✓' : '✗'}
+                          </div>
+                        ) : (
+                          <span className="text-yellow-300 font-medium text-sm px-2 py-1 bg-yellow-300/10 rounded-md">
+                            {row.pro}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-center">
-                    {typeof row.pro === 'boolean' ? (
-                      <span className={`inline-block w-6 h-6 rounded-full ${row.pro ? 'bg-cyberpunk-green text-cyberpunk-dark' : 'bg-red-500/20 text-red-400'} flex items-center justify-center text-sm`}>
-                        {row.pro ? '✓' : '✗'}
-                      </span>
-                    ) : (
-                      <span className="text-yellow-300">{row.pro}</span>
-                    )}
+                </motion.div>
+              ))}
+              
+              {/* Призыв к действию для мобильных */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="bg-gradient-to-r from-cyberpunk-green/10 to-cyberpunk-blue/10 rounded-xl p-6 mt-6 border border-cyberpunk-green/30"
+              >
+                <div className="text-center">
+                  <h4 className="text-cyberpunk-green font-bold text-lg mb-2">Ready to Start?</h4>
+                  <p className="text-cyberpunk-neon/70 text-sm mb-4">Choose your plan and begin your trading journey</p>
+                  <div className="flex gap-3 justify-center">
+                    <a 
+                      href="https://t.me/mishacryptosss" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-cyan-300/20 text-cyan-300 rounded-lg text-sm font-medium border border-cyan-300/30 hover:bg-cyan-300/30 transition-colors cursor-pointer"
+                    >
+                      Starter
+                    </a>
+                    <a 
+                      href="https://t.me/mishacryptosss" 
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-4 py-2 bg-cyberpunk-green/20 text-cyberpunk-green rounded-lg text-sm font-medium border border-cyberpunk-green/30 hover:bg-cyberpunk-green/30 transition-colors cursor-pointer"
+                    >
+                      Mentorship
+                    </a>
                   </div>
                 </div>
-              ))}
+              </motion.div>
             </div>
-          </div>
+          ) : (
+            /* Десктопная версия - таблица */
+            <div className="overflow-hidden rounded-2xl bg-cyberpunk-dark/50 backdrop-blur-md shadow-2xl">
+              <div className="p-6 md:p-8">
+                {/* Table header */}
+                <div className="comparison-row grid grid-cols-3 gap-4 mb-6 pb-4 border-b border-cyberpunk-pink/30">
+                  <div className="text-cyberpunk-neon font-bold text-lg">Feature</div>
+                  <div className="text-cyan-300 font-bold text-lg text-center">Starter</div>
+                  <div className="text-yellow-300 font-bold text-lg text-center">Mentorship</div>
+                </div>
+
+                {/* Table rows */}
+                {comparisonFeatures.map((row, index) => (
+                  <div 
+                    key={index} 
+                    className={`comparison-row grid grid-cols-3 gap-4 py-4 rounded-lg hover:bg-cyberpunk-neon/5 transition-colors ${index !== comparisonFeatures.length - 1 ? 'border-b border-cyberpunk-neon/10' : ''}`}
+                  >
+                    <div className="text-cyberpunk-neon/90">{row.feature}</div>
+                    <div className="text-center">
+                      {typeof row.starter === 'boolean' ? (
+                        <span className={`inline-block w-6 h-6 rounded-full ${row.starter ? 'bg-cyberpunk-green text-cyberpunk-dark' : 'bg-red-500/20 text-red-400'} flex items-center justify-center text-sm`}>
+                          {row.starter ? '✓' : '✗'}
+                        </span>
+                      ) : (
+                        <span className="text-cyan-300">{row.starter}</span>
+                      )}
+                    </div>
+                    <div className="text-center">
+                      {typeof row.pro === 'boolean' ? (
+                        <span className={`inline-block w-6 h-6 rounded-full ${row.pro ? 'bg-cyberpunk-green text-cyberpunk-dark' : 'bg-red-500/20 text-red-400'} flex items-center justify-center text-sm`}>
+                          {row.pro ? '✓' : '✗'}
+                        </span>
+                      ) : (
+                        <span className="text-yellow-300">{row.pro}</span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </motion.div>
 
       </div>

@@ -2,7 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { gsap } from 'gsap';
+import gsap from 'gsap';
 
 interface GrowthChartProps {
   className?: string;
@@ -46,7 +46,7 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ className = '' }) => {
   const areaData = `${pathData} L ${xScale(dataPoints.length - 1)} ${chartHeight - padding} L ${padding} ${chartHeight - padding} Z`;
 
   const animateChart = () => {
-    if (!svgRef.current) return;
+    if (!svgRef.current || typeof window === 'undefined') return;
 
     const svg = svgRef.current;
     const path = svg.querySelector('.growth-line') as SVGPathElement;
@@ -54,7 +54,10 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ className = '' }) => {
     const dots = svg.querySelectorAll('.growth-dot');
     const labels = svg.querySelectorAll('.growth-label');
 
-    if (!path || !area) return;
+    if (!path || !area) {
+      console.warn('GSAP: Growth chart elements not found, skipping animation');
+      return;
+    }
 
     // Reset everything
     gsap.set([path, area], { strokeDasharray: "0 1000", fillOpacity: 0 });
@@ -116,8 +119,13 @@ const GrowthChart: React.FC<GrowthChartProps> = ({ className = '' }) => {
   };
 
   useEffect(() => {
-    if (isInView) {
-      animateChart();
+    if (isInView && typeof window !== 'undefined') {
+      // Добавляем задержку для полной загрузки DOM
+      const timer = setTimeout(() => {
+        animateChart();
+      }, 200);
+      
+      return () => clearTimeout(timer);
     }
   }, [isInView]);
 

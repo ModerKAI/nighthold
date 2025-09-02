@@ -42,24 +42,31 @@ export default function TestimonialsSection() {
 
   useEffect(() => {
     // GSAP анимация для фоновых элементов
-    if (backgroundRef.current) {
-      const particles = backgroundRef.current.querySelectorAll('.bg-particle');
-      
-      gsap.set(particles, {
-        opacity: 0,
-        scale: 0
-      });
+    if (backgroundRef.current && typeof window !== 'undefined') {
+      // Добавляем задержку для полной загрузки DOM
+      const timer = setTimeout(() => {
+        const particles = backgroundRef.current?.querySelectorAll('.bg-particle');
+        
+        if (particles && particles.length > 0) {
+          gsap.set(particles, {
+            opacity: 0,
+            scale: 0
+          });
 
-      gsap.to(particles, {
-        opacity: 0.6,
-        scale: 1,
-        duration: 2,
-        stagger: 0.1,
-        ease: "power2.out",
-        repeat: -1,
-        yoyo: true,
-        repeatDelay: 1
-      });
+          gsap.to(particles, {
+            opacity: 0.6,
+            scale: 1,
+            duration: 2,
+            stagger: 0.1,
+            ease: "power2.out",
+            repeat: -1,
+            yoyo: true,
+            repeatDelay: 1
+          });
+        }
+      }, 100);
+      
+      return () => clearTimeout(timer);
     }
   }, []);
 
@@ -147,7 +154,7 @@ export default function TestimonialsSection() {
             { label: "Average Profit", value: "+127%", color: "pink" },
             { label: "Success Rate", value: "70%", color: "green" },
             { label: "Students Helped", value: "250", color: "blue" },
-            { label: "Months to Profit", value: "2.3", color: "yellow" }
+            { label: "Months to Profit", value: "2/3", color: "yellow" }
           ].map((stat, index) => (
             <motion.div
               key={index}
