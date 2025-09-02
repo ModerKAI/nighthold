@@ -3,27 +3,27 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Section from "@/components/Section";
 import SectionNav from "@/components/SectionNav";
-import Counter from "@/components/Counter";
+
 import ScrollPinSector from "@/components/ScrollPinSector";
 import CountdownTimer from "@/components/CountdownTimer";
+import TestimonialsSection from "@/components/TestimonialsSection";
+import CommunityPricingSection from "@/components/CommunityPricingSection";
+import FAQSection from "@/components/FAQSection";
+import AboutSection from "@/components/AboutSection";
+import ClientOnly from "@/components/ClientOnly";
 
 export default function Home() {
   const [mounted, setMounted] = useState(false);
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
-  const stats: { label: string; val: number; suffix?: string; color: 'pink'|'blue'|'yellow'|'green'; decimals?: number }[] = [
-    { label: "Successful Orders", val: 7000, suffix: "+", color: "pink" },
-    { label: "Years of Success", val: 8, suffix: "", color: "blue" },
-    { label: "Students Trained", val: 10000, suffix: "+", color: "yellow" },
-    { label: "Win Rate", val: 94.2, suffix: "%", color: "green", decimals: 1 },
-  ];
+
 
   useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     if (!loading) return;
     if (progress < 100) {
-      const timeout = setTimeout(() => setProgress(progress + Math.floor(Math.random() * 10 + 5)), 150);
+      const timeout = setTimeout(() => setProgress(progress + Math.floor((progress % 7) + 5)), 150);
       return () => clearTimeout(timeout);
     } else {
       setTimeout(() => setLoading(false), 1000);
@@ -31,8 +31,10 @@ export default function Home() {
   }, [progress, loading]);
 
   return (
-  <main className="text-cyberpunk-neon w-full overflow-x-hidden relative">
-      <SectionNav ids={["section-1","section-2","section-3","section-4","section-5","section-6"]} />
+  <main className="text-cyberpunk-neon w-full overflow-x-hidden relative" suppressHydrationWarning>
+      <ClientOnly>
+        <SectionNav ids={["section-1","section-2","section-3","section-4","section-5","section-6"]} />
+      </ClientOnly>
       {/* Preloader */}
       <AnimatePresence>
         {mounted && loading && (
@@ -97,11 +99,42 @@ export default function Home() {
             </div>
             <div className="text-xl text-white font-bold tracking-widest text-center">
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 1 }}
               >
-                INITIALIZING<br />TRADING<br />PLATFORM
+                <motion.span
+                  animate={{ 
+                    textShadow: [
+                      "0 0 0px rgba(0,255,194,0.8)",
+                      "0 0 20px rgba(0,255,194,0.8)",
+                      "0 0 0px rgba(0,255,194,0.8)"
+                    ]
+                  }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
+                  className="block"
+                >
+                  PLEASE WAIT
+                </motion.span>
+                <motion.span
+                  animate={{ 
+                    color: ["#ffffff", "#00FFC2", "#ffffff"],
+                    scale: [1, 1.05, 1]
+                  }}
+                  transition={{ 
+                    duration: 1.5, 
+                    repeat: Infinity, 
+                    ease: "easeInOut",
+                    delay: 0.3
+                  }}
+                  className="block mt-2 text-lg"
+                >
+                  MAKING YOU PROFITABLE
+                </motion.span>
               </motion.div>
             </div>
           </motion.div>
@@ -153,211 +186,69 @@ export default function Home() {
               transition={{ delay: 0.3, duration: 1 }}
               className="text-lg md:text-xl text-cyberpunk-neon opacity-90"
             >
-              Exclusive Course on Smart Money Concepts
+              Exclusive Course on NightHold Concepts
             </motion.p>
           </div>
         </div>
+
+        {/* Статистика в левом нижнем углу */}
+        <motion.div
+          initial={{ opacity: 0, x: -30 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.8, duration: 1 }}
+          className="absolute bottom-8 left-8 z-10"
+        >
+          <div className="text-cyberpunk-green/80 text-sm md:text-base font-mono tracking-wider">
+            <div className="flex items-center space-x-4">
+              <span className="flex items-center">
+                <span className="text-cyberpunk-pink">15</span>
+                <span className="ml-1">students</span>
+              </span>
+              <span className="text-cyberpunk-yellow">•</span>
+              <span className="flex items-center">
+                <span className="text-cyberpunk-blue">5</span>
+                <span className="ml-1">mentors</span>
+              </span>
+            </div>
+          </div>
+        </motion.div>
   </Section>
 
       {/* Остальные 5 секторов */}
-      {/* Сектор 2 — Неоновые метрики и преимущества */}
-      <Section
-        id="section-2"
-        className="min-h-[80vh] w-full px-6 py-24"
-        variant="fadeUp"
-        duration={0.8}
-        delay={0.05}
-      >
-        <h2 className="text-4xl md:text-5xl font-extrabold mb-10 text-center text-cyberpunk-yellow">
-          Smart Money Trading — Facts & Figures
-        </h2>
-        <div className="mx-auto max-w-6xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {/* Стат-карточки */}
-          {stats.map((s, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 50, scale: 0.8 }}
-              whileInView={{ 
-                opacity: 1, 
-                y: 0, 
-                scale: 1,
-                transition: {
-                  duration: 0.6,
-                  delay: idx * 0.1,
-                  ease: [0.23, 1, 0.32, 1]
-                }
-              }}
-              exit={{ 
-                opacity: 0, 
-                y: 30, 
-                scale: 0.9,
-                transition: {
-                  duration: 0.3,
-                  ease: "easeInOut"
-                }
-              }}
-              viewport={{ once: false, margin: "-50px" }} // Убираем once: true
-              className={`rounded-2xl border-2 p-4 md:p-6 backdrop-blur-md shadow-cyberpunk hover:scale-[1.02] transition-transform duration-300 min-h-[140px] flex flex-col justify-center
-                ${s.color === 'pink' ? 'border-cyberpunk-pink/70 bg-cyberpunk-pink/10' : ''}
-                ${s.color === 'blue' ? 'border-cyberpunk-blue/70 bg-cyberpunk-blue/10' : ''}
-                ${s.color === 'yellow' ? 'border-cyberpunk-yellow/70 bg-cyberpunk-yellow/10' : ''}
-                ${s.color === 'green' ? 'border-cyberpunk-green/70 bg-cyberpunk-green/10' : ''}
-              `}
-            >
-              <div className="text-xs md:text-sm tracking-widest uppercase opacity-80 mb-2 text-center">{s.label}</div>
-              <Counter
-                to={s.val}
-                decimals={s.decimals ?? 0}
-                suffix={s.suffix ?? ""}
-                duration={2 + idx * 0.3} // Каскадная анимация: 2s, 2.3s, 2.6s, 2.9s
-                className={`block text-2xl sm:text-3xl md:text-4xl font-extrabold drop-shadow-cyberpunk text-center leading-tight ${
-                  s.color === 'pink' ? 'text-cyberpunk-pink' :
-                  s.color === 'blue' ? 'text-cyberpunk-blue' :
-                  s.color === 'yellow' ? 'text-cyberpunk-yellow' :
-                  'text-cyberpunk-green'
-                }`}
-              />
-            </motion.div>
-          ))}
-        </div>
-
-        {/* Trading Advantages */}
-        <div className="mx-auto max-w-5xl mt-14 grid grid-cols-1 md:grid-cols-3 gap-6">
-          {[
-            { t: "Smart Money Flow", d: "Learn to identify institutional order flow and market manipulation." },
-            { t: "Risk Management", d: "Master professional risk management and position sizing techniques." },
-            { t: "Market Structure", d: "Understand market cycles, liquidity zones and order block concepts." },
-          ].map((f, i) => (
-            <div key={i} className="rounded-xl border-2 border-cyberpunk-pink/60 bg-black/30 p-6">
-              <div className="text-cyberpunk-pink font-bold tracking-wide mb-2">{f.t}</div>
-              <div className="text-cyberpunk-neon/90">{f.d}</div>
-            </div>
-          ))}
-        </div>
-      </Section>
+      {/* Сектор 2 — About Us Section */}
+      <ClientOnly>
+        <AboutSection />
+      </ClientOnly>
 
       {/* Сектор 3 — Pinned elements / Scroll pinning */}
-      <div className="mb-32">
+      <div className="mb-32 relative">
         <ScrollPinSector />
       </div>
 
       {/* Countdown Timer Section */}
-      <CountdownTimer />
+      <ClientOnly>
+        <CountdownTimer />
+      </ClientOnly>
 
-      {/* Сектор 4..6 — шаблон */}
-      {[...Array(3)].map((_, j) => (
-        <Section
-          id={`section-${j + 4}`}
-          key={j}
-          className={`min-h-[80vh] flex flex-col items-center justify-center w-full px-4 py-20 border-b-2 ${
-            j === 0 ? 'bg-cyberpunk-yellow/10 border-cyberpunk-green' :
-            j === 1 ? 'bg-cyberpunk-green/10 border-cyberpunk-pink' :
-            'bg-cyberpunk-blue/10 border-cyberpunk-blue'
-          }`}
-          variant={j % 2 === 0 ? 'fadeUp' : 'fadeLeft'}
-          duration={0.8}
-          delay={j * 0.05}
-        >
-          <h2 className={`text-4xl md:text-5xl font-extrabold mb-6 text-center ${
-            j === 0 ? 'text-cyberpunk-green' :
-            j === 1 ? 'text-cyberpunk-pink' :
-            'text-cyberpunk-blue'
-          }`}>
-            {j === 0 ? 'Our Results' : j === 1 ? 'Community' : 'Get Started'}
-          </h2>
-          <p className="max-w-2xl text-lg md:text-2xl text-cyberpunk-neon text-center">
-            {j === 0 ? 'See the amazing results achieved by our students through smart money concepts and institutional trading strategies.' :
-             j === 1 ? 'Join our exclusive community of traders who share knowledge, strategies and support each other on the trading journey.' :
-             'Ready to transform your trading? Get instant access to our complete course and start your journey to financial freedom.'}
-          </p>
-        </Section>
-      ))}
+      {/* Сектор 5 — Результаты и кейсы */}
+      <ClientOnly>
+        <TestimonialsSection />
+      </ClientOnly>
 
-      {/* About Section */}
-      <section className="py-32 px-4 flex flex-col items-center bg-cyberpunk-dark/90 border-t-2 border-cyberpunk-pink">
-        <motion.h2
-          initial={{ opacity: 0, x: -80 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-3xl md:text-5xl font-bold text-cyberpunk-yellow mb-6 text-center"
-        >
-          Smart Money Community
-        </motion.h2>
-        <motion.p
-          initial={{ opacity: 0, x: 80 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="max-w-2xl text-cyberpunk-neon text-lg md:text-xl text-center"
-        >
-          Join thousands of successful traders who have mastered institutional trading concepts. Our exclusive community provides ongoing support, advanced strategies, and direct access to professional trading insights.
-        </motion.p>
-      </section>
+      {/* Сектор 6 — Community & Pricing */}
+      <ClientOnly>
+        <CommunityPricingSection />
+      </ClientOnly>
 
-      {/* Features Section */}
-      <section className="py-32 px-4 bg-cyberpunk-dark flex flex-col items-center border-t-2 border-cyberpunk-blue">
-        <motion.h2
-          initial={{ opacity: 0, y: 60 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-3xl md:text-5xl font-bold text-cyberpunk-blue mb-12 text-center"
-        >
-          Trading Skills You&apos;ll Master
-        </motion.h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
-          {[1,2,3].map((i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7, delay: i * 0.2 }}
-              className="rounded-xl bg-cyberpunk-dark border-2 border-cyberpunk-pink p-8 shadow-cyberpunk flex flex-col items-center hover:scale-105 transition-transform duration-300"
-            >
-              <div className="w-16 h-16 rounded-full bg-cyberpunk-pink mb-4 flex items-center justify-center text-cyberpunk-dark text-2xl font-bold shadow-cyberpunk">
-                0{i}
-              </div>
-              <h3 className="text-xl font-bold mb-2 text-cyberpunk-yellow">
-                {i === 1 ? 'Market Structure' : i === 2 ? 'Order Flow' : 'Risk Management'}
-              </h3>
-              <p className="text-cyberpunk-neon text-center">
-                {i === 1 ? 'Understand how institutional traders analyze market structure and identify key levels.' :
-                 i === 2 ? 'Learn to read order flow and smart money movements in real-time market conditions.' :
-                 'Master professional risk management techniques used by successful institutional traders.'}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </section>
-
-      {/* Call to Action Section */}
-      <section className="py-32 px-4 flex flex-col items-center bg-cyberpunk-dark/95 border-t-2 border-cyberpunk-yellow">
-        <motion.h2
-          initial={{ opacity: 0, scale: 0.8 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="text-3xl md:text-5xl font-bold text-cyberpunk-green mb-8 text-center"
-        >
-          Ready to Start Trading Like a Pro?
-        </motion.h2>
-        <motion.button
-          initial={{ opacity: 0, y: 40 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1, delay: 0.3 }}
-          className="px-12 py-4 rounded-xl bg-cyberpunk-pink text-cyberpunk-dark font-bold text-2xl shadow-cyberpunk hover:bg-cyberpunk-yellow hover:text-cyberpunk-pink transition duration-300"
-        >
-          Get Instant Access
-        </motion.button>
-      </section>
+      {/* Сектор 7 — FAQ */}
+      <ClientOnly>
+        <FAQSection />
+      </ClientOnly>
 
       {/* Footer */}
-      <footer className="py-12 px-4 flex flex-col items-center border-t-2 border-cyberpunk-pink bg-cyberpunk-dark/90 mt-12">
+      <footer className="py-12 px-4 flex flex-col items-center bg-cyberpunk-dark/90 mt-12">
         <p className="text-cyberpunk-green text-center text-sm tracking-widest opacity-70">
-          © 2025 Smart Money Academy. All rights reserved.
+          © 2025 NIGHTHOLD. All rights reserved.
         </p>
       </footer>
     </main>

@@ -12,5 +12,5 @@ export default function ClientOnly({ children }: { children: React.ReactNode }) 
     return null;
   }
 
-  return <>{children}</>;
+  return <div suppressHydrationWarning>{children}</div>;
 }

@@ -1,78 +1,128 @@
-# Lending (Next.js + Tailwind + Framer Motion)
+# 🌙 NightHold Trading Academy
 
-Киберпанк-лендинг на Next.js (App Router, TypeScript), Tailwind CSS и Framer Motion.
+**Professional trading platform** specializing in advanced **NightHold concepts** and institutional trading strategies.
 
-## Быстрый старт
+## 🚀 Quick Start
 
-```powershell
-# Установка зависимостей
-npm ci  # или npm install, если нет package-lock.json
+```bash
+# Install dependencies
+npm install
 
-# Разработка (HMR):
-# Вариант 1 (автопорт, может быть 3001):
+# Development server
 npm run dev
-# Вариант 2 (стабильный IPv4/порт 3010 — рекомендуется на Windows):
-npm run dev:ipv4
 
-# Прод-сборка и запуск (бережливый режим):
+# Production build
 npm run build
-# Прод-запуск (стабильно на IPv4/3010):
-npm run start:ipv4
+
+# Start production server
+npm run start
 ```
 
-## Миграция/перенос в новую папку
+**Local development:** http://localhost:3000
 
-```powershell
-# Скопировать проект без артефактов сборки
-robocopy D:\Lending D:\Lending_new /MIR /XD node_modules .next .turbo
+## 📊 Project Overview
 
-cd D:\Lending_new
-npm ci  # или npm install
+**NightHold Trading Academy** is a modern web platform offering:
 
-# При необходимости восстановить .env.local и public/media/*
+- 📈 **Advanced Trading Strategies** based on institutional concepts
+- 💡 **Educational Content** for serious traders
+- 🎯 **Community Access** with VIP Discord channels  
+- 📱 **Responsive Design** optimized for all devices
+- ⚡ **High Performance** with Next.js 15 and modern tech stack
+
+## 🛠️ Tech Stack
+
+- **Framework:** Next.js 15.5.2 (App Router)
+- **Language:** TypeScript 5.x
+- **Styling:** Tailwind CSS 4.x
+- **Animations:** Framer Motion 12.x + GSAP 3.x
+- **Icons:** Lucide React
+- **Performance:** Turbopack enabled
+
+## 🎨 Features
+
+### 🏠 Landing Page
+- Hero section with video background
+- Interactive navigation with smooth scrolling
+- Community statistics counter
+- Testimonials carousel
+- FAQ section with animations
+
+### 💰 Pricing Plans
+- **Starter Plan** ($99/month) - Perfect for beginners
+- **Mentorship Plan** ($199/month) - Advanced strategies
+
+### 🎬 Animations & Effects
+- Smooth scroll animations with GSAP
+- Framer Motion page transitions  
+- Interactive hover effects
+- Loading states and progress indicators
+
+## 📁 Project Structure
+
+```
+nighthold/
+├── src/
+│   ├── app/
+│   │   ├── layout.tsx          # Root layout with fonts & metadata
+│   │   ├── page.tsx            # Main landing page
+│   │   ├── globals.css         # Global styles & Tailwind
+│   │   └── api/health/         # Health check endpoint
+│   ├── components/
+│   │   ├── AboutSection.tsx    # About/features section
+│   │   ├── FAQSection.tsx      # FAQ with animations
+│   │   ├── CountdownTimer.tsx  # 30-day countdown timer
+│   │   ├── CommunityPricingSection.tsx  # Pricing cards
+│   │   ├── TestimonialsSection.tsx      # Customer testimonials
+│   │   ├── MenuOverlay.tsx     # Navigation menu
+│   │   └── ...                 # Other UI components
+│   └── types/                  # TypeScript definitions
+├── public/
+│   └── media/                  # Static assets (videos, images)
+├── package.json               # Dependencies & scripts
+└── README.md                  # This file
 ```
 
-## Что хранится в public/media
-- hero.mp4 — видео-фон первого экрана
-- bg-cyberpunk.png — глобальный фон body
- - logo.png — логотип в шапке
+## 🚀 Deployment
 
-## Полезные скрипты в package.json
-- dev — запуск dev-сервера с HMR
-- build — прод-сборка
-- start — запуск прод-сборки
+### Vercel (Recommended)
+```bash
+# Connect to Vercel
+vercel --prod
+```
 
-## Навигация и меню
-- В шапке есть круглая кнопка, открывающая полноэкранное меню.
-- Пункты меню кликабельны: плавно скроллят к секциям `#section-1`, `#section-3`, `#section-4`, `#section-6` и закрывают оверлей.
-- Соц‑плитки кликабельны (заглушки): YouTube/Instagram/Telegram в новой вкладке, почта через `mailto:`.
+### Manual Build
+```bash
+npm run build
+npm run start
+```
 
-## Частые проблемы
-- ERR_CONNECTION_REFUSED на http://localhost:3000 — сервер не запущен либо порт занят.
-	- Запустите dev: `npm run dev` и смотрите лог. Часто он пишет: `Port 3000 is in use... using 3001 instead`.
-	- Тогда открывайте http://localhost:3001.
-	- Или используйте стабильный скрипт: `npm run dev:ipv4` и открывайте http://127.0.0.1:3010.
-- EBUSY при сборке на Windows (`rmdir ... .next\export`) — закройте проводники/процессы, держащие папку `.next`, повторите `npm run build`.
+## 🔧 Configuration
 
-## Готовый промпт для следующего помощника
-Скопируйте и вставьте это в начало новой сессии:
+- **ESLint:** Configured with Next.js rules
+- **TypeScript:** Strict mode enabled
+- **Tailwind:** Custom cyberpunk theme with neon colors
+- **Images:** Optimized with Next.js Image component
 
-"""
-Контекст: у меня Next.js проект (App Router, TypeScript) с Tailwind и Framer Motion. Папка public/media содержит hero.mp4 и bg-cyberpunk.png. Хочу продолжить разработку киберпанк-лендинга.
+## 📱 Browser Support
 
-Проверь, пожалуйста:
-- версии Node/npm, наличие и корректность зависимостей (npm ci),
-- работоспособность сборки и запуска (npm run build, npm run start),
-- отсутствуют ли 404 по статике (особенно пути /media/*),
-- нет ли SSR/гидрационных предупреждений.
+- ✅ Chrome 90+
+- ✅ Firefox 88+  
+- ✅ Safari 14+
+- ✅ Edge 90+
 
-Затем:
-- запусти проект в подходящем режиме (dev или build/start по ситуации),
-- сделай небольшой аудит кода (src/app/layout.tsx, src/app/page.tsx, src/components/*, src/app/globals.css),
-- предложи оптимизации производительности и анимаций,
-- и продолжим реализовывать следующий функционал по моим задачам.
-"""
+## 🤝 Contributing
 
-## Замечания
-- Если заметите 404 по изображению bg-cyberпанк.jpg — замените путь на /media/bg-cyberpunk.png и сделайте жёсткое обновление (Ctrl+F5) или очистите кэш.
-- Для снижения нагрузки используйте цикл: правка → npm run build → npm run start; останавливайте сервер Ctrl+C, когда он не нужен.
+1. Fork the repository
+2. Create feature branch: `git checkout -b feature/amazing-feature`
+3. Commit changes: `git commit -m 'Add amazing feature'`
+4. Push to branch: `git push origin feature/amazing-feature`
+5. Open Pull Request
+
+## 📄 License
+
+This project is proprietary software developed for NightHold Trading Academy.
+
+---
+
+**© 2025 NightHold Trading Academy. All rights reserved.**

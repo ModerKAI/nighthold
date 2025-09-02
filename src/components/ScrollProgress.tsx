@@ -1,9 +1,20 @@
 "use client";
+import { useEffect, useState } from "react";
 import { motion, useScroll, useSpring } from "framer-motion";
 
 export default function ScrollProgress() {
+  const [mounted, setMounted] = useState(false);
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 120, damping: 20, mass: 0.2 });
+
+  if (!mounted) {
+    return null;
+  }
   return (
     <motion.div
       style={{ scaleX }}

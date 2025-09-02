@@ -4,7 +4,7 @@ import { useRef, useEffect, useState, useCallback } from "react";
 
 const steps = [
   { title: "Market Structure", desc: "Analyze current market conditions and identify key institutional levels and zones" },
-  { title: "Liquidity", desc: "Understand liquidity pools and how smart money targets retail stop losses" },
+  { title: "Liquidity", desc: "Understand liquidity pools and how institutional money targets retail stop losses" },
   { title: "Order Blocks", desc: "Master order block concepts and institutional order flow patterns" },
   { title: "Risk Management", desc: "Implement professional risk management and position sizing strategies" },
   { title: "Optimization", desc: "Optimize your trading approach for consistent and profitable results" },
@@ -12,29 +12,40 @@ const steps = [
 ];
 
 export default function ScrollPinSector() {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [mounted, setMounted] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);   
   const [currentStep, setCurrentStep] = useState(0);
   const [lastCompletedStep, setLastCompletedStep] = useState(0); // Запоминаем последний пройденный шаг
   const [isLocked, setIsLocked] = useState(false);
-  const [isInViewport, setIsInViewport] = useState(false);
+  const [, setIsInViewport] = useState(false);
   const [recentlyUnlocked, setRecentlyUnlocked] = useState(false);
   const [isAnimationActive, setIsAnimationActive] = useState(false);
   const [frozenPosition, setFrozenPosition] = useState<number | null>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   const [rotationCount, setRotationCount] = useState(0);
   const [isFrozen, setIsFrozen] = useState(false); // Состояние фиксации
+  
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   
   // Motion values для плавного движения
   const xMotion = useMotionValue(0);
   const xSpring = useSpring(xMotion, { damping: 35, stiffness: 300 }); // Быстрая и плавная анимация
   
   const { scrollYProgress } = useScroll({
-    target: containerRef,
+    target: mounted ? containerRef : undefined,
     offset: ["start center", "end center"]
   });
   
   // Основное горизонтальное движение
   const x = useTransform(scrollYProgress, [0, 1], [0, -83.33]);
-  const xPercent = useTransform(x, (value) => `${value}%`);
+  // const xPercent = useTransform(x, (value) => `${value}%`);
+  // Переменная x используется косвенно через xSpring
+  console.log('X value for debugging:', x.get());
   const xSpringPercent = useTransform(xSpring, (value) => `${value}%`);
 
   // Отслеживание видимости секции
@@ -306,14 +317,20 @@ export default function ScrollPinSector() {
     return () => clearInterval(interval);
   }, [isLocked, isAnimationActive]);
 
+  if (!mounted) {
+    return <div className="min-h-screen w-full" />; // Placeholder для SSR
+  }
+
   return (
     <section 
       id="section-3" 
       ref={containerRef} 
       className="relative min-h-screen w-full px-0 py-12"
+      style={{ position: 'relative' }}
+      suppressHydrationWarning
     >
       {/* Закрепленный контейнер */}
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center">{/* Убрали bg-cyberpunk-dark */}
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center" suppressHydrationWarning>{/* Убрали bg-cyberpunk-dark */}
         {/* Заголовок */}
         <h2 className="text-4xl md:text-6xl font-bold text-cyberpunk-green mb-12 text-center z-10">
           6 Steps to Success
@@ -357,14 +374,17 @@ export default function ScrollPinSector() {
                   }}
                 >
                   {/* Дополнительный фоновый слой */}
-                  <div className={`absolute inset-0 opacity-20 ${
-                    i === 0 ? 'bg-gradient-to-r from-cyberpunk-pink/40 to-transparent' :
-                    i === 1 ? 'bg-gradient-to-r from-cyberpunk-blue/40 to-transparent' :
-                    i === 2 ? 'bg-gradient-to-r from-cyberpunk-yellow/40 to-transparent' :
-                    i === 3 ? 'bg-gradient-to-r from-cyberpunk-green/40 to-transparent' :
-                    i === 4 ? 'bg-gradient-to-r from-purple-400/40 to-transparent' :
-                    'bg-gradient-to-r from-orange-400/40 to-transparent'
-                  }`} />
+                  <div 
+                    className="absolute inset-0 opacity-20"
+                    style={{
+                      background: i === 0 ? 'linear-gradient(to right, rgba(0,255,194,0.4), transparent)' :
+                                 i === 1 ? 'linear-gradient(to right, rgba(0,229,170,0.4), transparent)' :
+                                 i === 2 ? 'linear-gradient(to right, rgba(242,169,0,0.4), transparent)' :
+                                 i === 3 ? 'linear-gradient(to right, rgba(57,255,20,0.4), transparent)' :
+                                 i === 4 ? 'linear-gradient(to right, rgba(147,51,234,0.4), transparent)' :
+                                 'linear-gradient(to right, rgba(249,115,22,0.4), transparent)'
+                    }}
+                  />
                   
                   {/* Анимированный фоновый эффект */}
                   <motion.div 
@@ -386,14 +406,17 @@ export default function ScrollPinSector() {
                   />
                   
                   {/* Паттерн фона */}
-                  <div className={`absolute inset-0 opacity-10 ${
-                    i === 0 ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(255,0,204,0.4)_0%,transparent_50%)]' :
-                    i === 1 ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(0,234,255,0.4)_0%,transparent_50%)]' :
-                    i === 2 ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(242,169,0,0.4)_0%,transparent_50%)]' :
-                    i === 3 ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(57,255,20,0.4)_0%,transparent_50%)]' :
-                    i === 4 ? 'bg-[radial-gradient(circle_at_50%_50%,rgba(147,51,234,0.4)_0%,transparent_50%)]' :
-                    'bg-[radial-gradient(circle_at_50%_50%,rgba(249,115,22,0.4)_0%,transparent_50%)]'
-                  }`} />
+                  <div 
+                    className="absolute inset-0 opacity-10"
+                    style={{
+                      background: i === 0 ? 'radial-gradient(circle at 50% 50%, rgba(0,255,194,0.4) 0%, transparent 50%)' :
+                                 i === 1 ? 'radial-gradient(circle at 50% 50%, rgba(0,229,170,0.4) 0%, transparent 50%)' :
+                                 i === 2 ? 'radial-gradient(circle at 50% 50%, rgba(242,169,0,0.4) 0%, transparent 50%)' :
+                                 i === 3 ? 'radial-gradient(circle at 50% 50%, rgba(57,255,20,0.4) 0%, transparent 50%)' :
+                                 i === 4 ? 'radial-gradient(circle at 50% 50%, rgba(147,51,234,0.4) 0%, transparent 50%)' :
+                                 'radial-gradient(circle at 50% 50%, rgba(249,115,22,0.4) 0%, transparent 50%)'
+                    }}
+                  />
                   
                   {/* Номер шага */}
                   <motion.div 

@@ -10,10 +10,10 @@ interface TimeLeft {
 }
 
 export default function CountdownTimer() {
-  // Устанавливаем дату окончания (например, через 2 дня)
+  // Устанавливаем дату окончания (через 30 дней)
   const targetDate = useMemo(() => {
     const date = new Date();
-    date.setDate(date.getDate() + 2);
+    date.setDate(date.getDate() + 30);
     return date;
   }, []);
 
@@ -31,6 +31,8 @@ export default function CountdownTimer() {
   }, []);
 
   useEffect(() => {
+    if (!mounted) return;
+    
     const calculateTimeLeft = () => {
       const now = new Date().getTime();
       const target = targetDate.getTime();
@@ -55,10 +57,34 @@ export default function CountdownTimer() {
     const timer = setInterval(calculateTimeLeft, 1000);
 
     return () => clearInterval(timer);
-  }, [targetDate]);
+  }, [targetDate, mounted]);
 
   if (!mounted) {
-    return null; // Предотвращаем гидрацию
+    // Возвращаем статичную версию для SSR
+    return (
+      <section className="relative min-h-screen w-full px-6 py-24 flex flex-col items-center justify-center">
+        <div className="relative z-10 text-center max-w-4xl">
+          <h2 className="text-4xl md:text-6xl font-extrabold mb-6 text-cyberpunk-pink drop-shadow-cyberpunk">
+            Time is Running Out!
+          </h2>
+          <p className="text-lg md:text-xl text-cyberpunk-neon mb-4 opacity-90">
+            Don&apos;t miss out — limited spots available and disappearing fast!
+          </p>
+          <p className="text-sm md:text-base text-cyberpunk-neon/70 mb-12">
+            * Join now and get instant access to the complete course, exclusive bonus materials, and lifetime updates.
+          </p>
+          {/* Статичные плейсхолдеры */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
+            {["Days", "Hours", "Minutes", "Seconds"].map((label) => (
+              <div key={label} className="text-center p-6 rounded-xl border-2 border-cyberpunk-green/40 bg-cyberpunk-dark/60 backdrop-blur-sm">
+                <div className="text-4xl md:text-5xl font-bold text-cyberpunk-green mb-2">--</div>
+                <div className="text-cyberpunk-neon/70 text-sm md:text-base tracking-wider">{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
   }
 
   const timeUnits = [
@@ -137,7 +163,10 @@ export default function CountdownTimer() {
         </div>
 
         {/* CTA Button */}
-        <motion.button
+        <motion.a
+          href="https://t.me/mishacryptosss"
+          target="_blank"
+          rel="noopener noreferrer"
           initial={{ opacity: 0, y: 30, scale: 0.9 }}
           whileInView={{ 
             opacity: 1, 
@@ -155,10 +184,10 @@ export default function CountdownTimer() {
             boxShadow: "0 0 30px rgba(255, 0, 204, 0.5)"
           }}
           whileTap={{ scale: 0.95 }}
-          className="px-12 py-4 rounded-xl bg-cyberpunk-pink text-cyberpunk-dark font-bold text-xl md:text-2xl shadow-cyberpunk hover:bg-cyberpunk-yellow hover:text-cyberpunk-pink transition-colors duration-300"
+          className="inline-block px-12 py-4 rounded-xl bg-cyberpunk-pink text-cyberpunk-dark font-bold text-xl md:text-2xl shadow-cyberpunk hover:bg-cyberpunk-yellow hover:text-cyberpunk-pink transition-colors duration-300"
         >
           Get Instant Access
-        </motion.button>
+        </motion.a>
 
         {/* Sparkle decoration */}
         <motion.div

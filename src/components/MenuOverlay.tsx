@@ -72,10 +72,9 @@ export default function MenuOverlay({ open, onClose }: Props) {
               variants={{ hidden: {}, show: { transition: { staggerChildren: 0.06 } } }}
             >
               {[
-                { id: "section-1", text: "ГОЛОВНА" },
-                { id: "section-3", text: "ВАКАНСІЇ" },
-                { id: "section-4", text: "БЛОГ" },
-                { id: "section-6", text: "КОНТАКТИ" },
+                { id: "section-1", text: "HOME" },
+                { id: "section-2", text: "BLOG" },
+                { id: "contacts", text: "CONTACTS" },
               ].map((it, i) => (
                 <motion.a
                   key={i}
@@ -99,21 +98,90 @@ export default function MenuOverlay({ open, onClose }: Props) {
               <div className="w-full border border-white/20 bg-black/40">
                 <div className="grid grid-cols-4">
                   {[
-                    { label: "YOUTUBE", icon: YoutubeIcon, href: "https://youtube.com/" },
-                    { label: "INSTAGRAM", icon: InstagramIcon, href: "https://instagram.com/" },
-                    { label: "TELEGRAM", icon: TelegramIcon, href: "https://t.me/" },
-                    { label: "GMAIL", icon: GmailIcon, href: "mailto:hello@example.com" },
+                    { label: "INSTAGRAM", icon: InstagramIcon, href: "https://www.instagram.com/nighthold_trading/" },
+                    { label: "TELEGRAM", icon: TelegramIcon, href: "https://t.me/+NUnUvdcg4IBjNDhi" },
+                    { label: "GMAIL", icon: GmailIcon, href: "mailto:melissaBmurray122@gmail.com" },
+                    { label: "YOUTUBE", icon: YoutubeIcon, href: "" },
                   ].map((s, idx) => (
-                    <a
-                      key={idx}
-                      href={s.href}
-                      target={s.href.startsWith('mailto:') ? undefined : "_blank"}
-                      rel={s.href.startsWith('mailto:') ? undefined : "noopener noreferrer"}
-                      className={`flex flex-col items-start justify-between p-6 min-h-[200px] hover:bg-white/5 transition-colors ${idx !== 0 ? 'border-l border-white/15' : ''}`}
-                    >
-                      <div className="opacity-90">{s.icon()}</div>
-                      <div className="text-white/85 font-bold tracking-widest text-sm mt-8">{s.label}</div>
-                    </a>
+                    s.href ? (
+                      <motion.a
+                        key={idx}
+                        href={s.href}
+                        target={s.href.startsWith('mailto:') ? undefined : "_blank"}
+                        rel={s.href.startsWith('mailto:') ? undefined : "noopener noreferrer"}
+                        className={`flex flex-col items-start justify-between p-6 min-h-[200px] relative overflow-hidden ${idx !== 0 ? 'border-l border-white/15' : ''}`}
+                        whileHover={{ 
+                          scale: 1.02,
+                          backgroundColor: "rgba(255,255,255,0.08)",
+                          transition: { duration: 0.3 }
+                        }}
+                        whileTap={{ scale: 0.98 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: idx * 0.1, duration: 0.5 }}
+                      >
+                        <motion.div 
+                          className="opacity-90"
+                          whileHover={{ 
+                            scale: 1.1,
+                            rotate: [0, -5, 5, 0],
+                            transition: { duration: 0.5 }
+                          }}
+                        >
+                          {s.icon()}
+                        </motion.div>
+                        <motion.div 
+                          className="text-white/85 font-bold tracking-widest text-sm mt-8"
+                          whileHover={{ 
+                            y: -2,
+                            color: "#00FFC2",
+                            transition: { duration: 0.3 }
+                          }}
+                        >
+                          {s.label}
+                        </motion.div>
+                        
+                        {/* Hover effect background */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-cyberpunk-pink/10 via-cyberpunk-blue/10 to-cyberpunk-green/10"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          whileHover={{ 
+                            opacity: 1, 
+                            scale: 1,
+                            transition: { duration: 0.3 }
+                          }}
+                        />
+                      </motion.a>
+                    ) : (
+                      <motion.div
+                        key={idx}
+                        className={`flex flex-col items-start justify-between p-6 min-h-[200px] opacity-50 cursor-not-allowed relative ${idx !== 0 ? 'border-l border-white/15' : ''}`}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 0.5, y: 0 }}
+                        transition={{ delay: idx * 0.1, duration: 0.5 }}
+                        whileHover={{ 
+                          opacity: 0.3,
+                          transition: { duration: 0.3 }
+                        }}
+                      >
+                        <motion.div className="opacity-90">
+                          {s.icon()}
+                        </motion.div>
+                        <motion.div className="text-white/85 font-bold tracking-widest text-sm mt-8">
+                          {s.label}
+                        </motion.div>
+                        
+                        {/* Disabled state indicator */}
+                        <motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-gray-800/20 to-gray-600/20"
+                          initial={{ opacity: 0 }}
+                          whileHover={{ 
+                            opacity: 1,
+                            transition: { duration: 0.3 }
+                          }}
+                        />
+                      </motion.div>
+                    )
                   ))}
                 </div>
               </div>

@@ -96,3 +96,17 @@ html {
 }
 .btn-crypto:hover { filter: brightness(1.06); box-shadow: 0 0 22px rgba(0,255,194,.5), 0 0 44px rgba(0,229,255,.35); }
 .btn-crypto:active { transform: translateY(1px); }
+
+/* Float animation for particles */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Grid pattern background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(0, 229, 255, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 229, 255, 0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+}

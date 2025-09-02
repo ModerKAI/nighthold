@@ -24,8 +24,19 @@ const pressStart = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: "Cyberpunk Landing",
-  description: "Cyberpunk style landing page",
+  title: "NightHold",
+  description: "NightHold Trading Academy - Master NightHold Concepts",
+  keywords: "trading, nighthold, forex, crypto, academy, institutional",
+  authors: [{ name: "NightHold Academy" }],
+  icons: {
+    icon: "/media/logo.png",
+    shortcut: "/media/logo.png",
+    apple: "/media/logo.png",
+    other: {
+      rel: "apple-touch-icon-precomposed",
+      url: "/media/logo.png",
+    },
+  },
 };
 
 export default function RootLayout({
@@ -34,7 +45,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable}`}>
+    <html lang="ru" className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable}`} suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         {/* Overlay для деликатного затемнения фонового изображения */}
         <div style={{position:'fixed',inset:0,zIndex:0,pointerEvents:'none',background:'rgba(10,10,26,0.82)'}} />

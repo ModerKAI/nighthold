@@ -53,7 +53,7 @@ export default function Counter({
       motion.set(from);
       setVal(from);
     }
-  }, [inView, to, duration, from]);
+  }, [inView, to, duration, from, motion]);
 
   const formatted = new Intl.NumberFormat(undefined, {
     minimumFractionDigits: decimals,
