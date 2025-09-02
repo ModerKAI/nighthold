@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Autostart Next.js with host/port fallback and simple readiness check
-import { spawn } from 'child_process';
+const { spawn } = require('child_process');
 
 const mode = process.argv[2] === 'start' ? 'start' : 'dev';
 const npx = process.platform === 'win32' ? 'npx.cmd' : 'npx';
