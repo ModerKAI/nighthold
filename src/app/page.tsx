@@ -180,14 +180,6 @@ export default function Home() {
             >
               Learn How Institutional Traders Operate
             </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3, duration: 1 }}
-              className="text-lg md:text-xl text-cyberpunk-neon opacity-90"
-            >
-              Exclusive Course on NightHold Concepts
-            </motion.p>
           </div>
         </div>
 
