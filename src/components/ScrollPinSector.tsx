@@ -34,6 +34,7 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
   const mobileScrollRef = useRef<HTMLDivElement>(null); // Ref для мобильного скролла
   const [currentStep, setCurrentStep] = useState(0);
   const [lastCompletedStep, setLastCompletedStep] = useState(0); // Запоминаем последний пройденный шаг
+  const [lastExitStep, setLastExitStep] = useState(0); // Запоминаем шаг при выходе из сектора
   const [isLocked, setIsLocked] = useState(false);
   const [, setIsInViewport] = useState(false);
   const [recentlyUnlocked, setRecentlyUnlocked] = useState(false);
@@ -261,6 +262,7 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
         console.log('At last step - COMPLETELY DISABLE section');
         setIsCompletelyDisabled(true); // ПОЛНОЕ ОТКЛЮЧЕНИЕ!
         setLastCompletedStep(steps.length - 1); // Запоминаем что дошли до 6-го блока
+        setLastExitStep(steps.length - 1); // Запоминаем шаг выхода = 6
         setIsLocked(false);
         setIsAnimationActive(false);
         setRecentlyUnlocked(false);
@@ -290,6 +292,7 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
         // На первом (1-м) шаге - ПОЛНОСТЬЮ ОТКЛЮЧАЕМ СЕКЦИЮ
         console.log('At first step - COMPLETELY DISABLE section');
         setIsCompletelyDisabled(true); // ПОЛНОЕ ОТКЛЮЧЕНИЕ!
+        setLastExitStep(0); // Запоминаем шаг выхода = 1
         setIsLocked(false);
         setIsAnimationActive(false);
         setRecentlyUnlocked(false);
@@ -382,16 +385,43 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
       setFrozenPosition(null);
       setRotationCount(0);
       
-      // Определяем направление входа в секцию и начальный шаг
-      const previousScrollY = element.dataset.savedScrollY ? parseInt(element.dataset.savedScrollY) : 0;
-      if (scrollY > previousScrollY) {
-        // Скролл сверху вниз - начинаем с первого шага
-        console.log('Entering from top - start from step 0');
-        setCurrentStep(0);
+      // Определяем направление входа в сектор и начальный шаг
+      const rect = element.getBoundingClientRect();
+      const isEnteringFromTop = rect.top > 0; // Если сектор виден сверху - вход сверху
+      const isEnteringFromBottom = rect.bottom < window.innerHeight; // Если сектор виден снизу - вход снизу
+      
+      console.log('Entry detection:', { 
+        isEnteringFromTop, 
+        isEnteringFromBottom, 
+        lastExitStep, 
+        rectTop: rect.top, 
+        rectBottom: rect.bottom,
+        windowHeight: window.innerHeight 
+      });
+      
+      if (isEnteringFromTop) {
+        // Вход сверху вниз
+        if (lastExitStep === steps.length - 1) {
+          // Если выходили на 6-м шаге - начинаем с 6-го
+          console.log('Entering from top after exiting on step 6 - start from step 5 (6th block)');
+          setCurrentStep(steps.length - 1);
+        } else {
+          // Обычный вход сверху - начинаем с первого шага
+          console.log('Entering from top - start from step 0');
+          setCurrentStep(0);
+        }
       } else {
-        // Скролл снизу вверх - начинаем с последнего пройденного шага
-        console.log('Entering from bottom - start from step:', lastCompletedStep || 5);
-        setCurrentStep(lastCompletedStep || 5); // По умолчанию 6-й блок
+        // Вход снизу вверх
+        if (lastExitStep === 0) {
+          // Если выходили на 1-м шаге - начинаем с 1-го
+          console.log('Entering from bottom after exiting on step 1 - start from step 0 (1st block)');
+          setCurrentStep(0);
+        } else {
+          // Обычный вход снизу - начинаем с последнего пройденного шага или 6-го
+          const startStep = lastExitStep !== 0 ? lastExitStep : (lastCompletedStep || steps.length - 1);
+          console.log('Entering from bottom - start from step:', startStep);
+          setCurrentStep(startStep);
+        }
       }
       
       // Сбрасываем состояние скроллинга для чистого старта
@@ -410,7 +440,7 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
       }
       }, 300); // Задержка 300ms для завершения плавного скролла
     }
-  }, [isLocked, recentlyUnlocked, lastCompletedStep, isMagnetizing, isCompletelyDisabled]);
+  }, [isLocked, recentlyUnlocked, lastCompletedStep, lastExitStep, isMagnetizing, isCompletelyDisabled]);
 
   // Event listeners
   useEffect(() => {
@@ -462,6 +492,11 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
       if (isOutOfView && isCompletelyDisabled) {
         console.log('Section completely out of view - ENABLE section again');
         setIsCompletelyDisabled(false);
+        // Сбрасываем lastExitStep только если секция полностью скрылась надолго
+        setTimeout(() => {
+          console.log('Resetting lastExitStep after long absence');
+          setLastExitStep(0);
+        }, 3000); // Увеличиваем время до 3 секунд
       }
     };
     
