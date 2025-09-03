@@ -40,6 +40,10 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
   const [mobileActiveStep, setMobileActiveStep] = useState(0); // Активный шаг для мобильных
   const [isAnimationActive, setIsAnimationActive] = useState(false);
   const [frozenPosition, setFrozenPosition] = useState<number | null>(null);
+  const [isScrolling, setIsScrolling] = useState(false); // Флаг для предотвращения быстрого скролла
+  const [lastScrollDirection, setLastScrollDirection] = useState<'up' | 'down' | null>(null); // Отслеживание направления
+  const [isMagnetizing, setIsMagnetizing] = useState(false); // Флаг процесса магнетизации
+  const [isCompletelyDisabled, setIsCompletelyDisabled] = useState(false); // ПОЛНОЕ ОТКЛЮЧЕНИЕ секции
 
   // Отслеживание скролла для мобильной версии
   useEffect(() => {
@@ -71,12 +75,45 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
     };
   }, [isMobile, mobileActiveStep]);
   
+  // Отслеживание кликов по навигации для исключения из магнетизма
+  useEffect(() => {
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      
+      // Проверяем клик по навигационным элементам
+      const isNavClick = target.closest('nav') || 
+                        target.closest('[data-nav]') ||
+                        target.closest('a[href]') ||
+                        target.closest('button') ||
+                        target.textContent?.includes('HOME') ||
+                        target.textContent?.includes('BLOG') ||
+                        target.textContent?.includes('CONTACTS') ||
+                        target.textContent?.includes('INSTAGRAM') ||
+                        target.textContent?.includes('TELEGRAM') ||
+                        target.textContent?.includes('GMAIL') ||
+                        target.textContent?.includes('YOUTUBE');
+      
+      if (isNavClick) {
+        console.log('Navigation click detected - disabling magnetism temporarily');
+        setIsCompletelyDisabled(true); // Временно отключаем секцию
+        
+        // Через 2 секунды возвращаем нормальную работу
+        setTimeout(() => {
+          setIsCompletelyDisabled(false);
+        }, 2000);
+      }
+    };
+    
+    document.addEventListener('click', handleClick, true);
+    return () => document.removeEventListener('click', handleClick, true);
+  }, []);
+  
   const [rotationCount, setRotationCount] = useState(0);
   const [isFrozen, setIsFrozen] = useState(false); // Состояние фиксации
   
   // Motion values для плавного движения
   const xMotion = useMotionValue(0);
-  const xSpring = useSpring(xMotion, { damping: 35, stiffness: 300 }); // Быстрая и плавная анимация
+  const xSpring = useSpring(xMotion, { damping: 50, stiffness: 150 }); // Более медленная и плавная анимация
   
   // Используем useScroll без условий
   const { scrollYProgress } = useScroll({
@@ -142,7 +179,9 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
   useEffect(() => {
     if (isLocked && isAnimationActive) {
       const currentPos = -currentStep * 16.666;
-      xMotion.set(currentPos);
+      // Плавная анимация вместо мгновенного set
+      xMotion.stop(); // Останавливаем текущую анимацию
+      xMotion.set(currentPos); // Spring уже обеспечит плавность
     } else {
       // В разблокированном состоянии сбрасываем позицию
       xMotion.set(0);
@@ -151,38 +190,82 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
 
   // Обработчики событий
   const handleWheel = useCallback((e: WheelEvent) => {
-    console.log('Wheel event:', { isLocked, isAnimationActive, isFrozen, deltaY: e.deltaY, currentStep });
+    // ПОЛНОЕ ОТКЛЮЧЕНИЕ СЕКЦИИ - просто выходим
+    if (isCompletelyDisabled) {
+      return;
+    }
     
-    // Блокируем колесико если не заблокировано ИЛИ если в режиме фиксации
-    if ((!isLocked || !isAnimationActive) || isFrozen) {
+    console.log('Wheel event:', { 
+      isLocked, 
+      isAnimationActive, 
+      isFrozen, 
+      deltaY: e.deltaY, 
+      currentStep, 
+      isScrolling,
+      lastScrollDirection,
+      stepsLength: steps.length 
+    });
+    
+    // Обрабатываем колесико ТОЛЬКО когда секция заблокирована И анимация активна
+    if (!isLocked || !isAnimationActive || isFrozen) {
       if (isFrozen) {
         console.log('Wheel ignored - position is FROZEN');
         e.preventDefault();
         e.stopPropagation();
       }
-      return;
+      return; // Выходим если секция не активна
+    }
+    
+    // Блокируем повторные события во время анимации
+    if (isScrolling) {
+      console.log('Wheel ignored - already scrolling');
+      e.preventDefault();
+      e.stopPropagation();
+      return; // Полностью прекращаем обработку
     }
     
     e.preventDefault();
     e.stopPropagation();
     
     const delta = e.deltaY;
+    const currentDirection = delta > 0 ? 'down' : 'up';
+    
+    // Предотвращаем быструю смену направления
+    if (lastScrollDirection && lastScrollDirection !== currentDirection && isScrolling) {
+      console.log('Direction change blocked - animation in progress');
+      return;
+    }
     
     if (delta > 0) {
       // Скролл вниз
+      console.log('Scroll DOWN - checking condition:', { 
+        currentStep, 
+        stepsLength: steps.length, 
+        maxStep: steps.length - 1,
+        canMoveForward: currentStep < steps.length - 1 
+      });
+      
       if (currentStep < steps.length - 1) {
         console.log('Moving forward to next step:', currentStep + 1);
+        setLastScrollDirection('down');
+        setIsScrolling(true); // Блокируем дальнейшие скроллы
         setCurrentStep(currentStep + 1);
         setRotationCount(prev => prev + 1);
+        // Разблокируем скролл через 1200ms для большей стабильности
+        setTimeout(() => {
+          setIsScrolling(false);
+          setLastScrollDirection(null); // Сбрасываем направление
+        }, 1200);
       } else {
-        // На последнем (6-м) шаге - разрешаем скролл вниз и выходим из секции
-        console.log('At last step - allowing scroll down and EXIT section');
+        // На последнем (6-м) шаге - ПОЛНОСТЬЮ ОТКЛЮЧАЕМ СЕКЦИЮ
+        console.log('At last step - COMPLETELY DISABLE section');
+        setIsCompletelyDisabled(true); // ПОЛНОЕ ОТКЛЮЧЕНИЕ!
         setLastCompletedStep(steps.length - 1); // Запоминаем что дошли до 6-го блока
         setIsLocked(false);
         setIsAnimationActive(false);
-        setRecentlyUnlocked(true);
+        setRecentlyUnlocked(false);
+        setIsMagnetizing(false);
         setFrozenPosition(-5 * 16.666); // Замораживаем на 6-м блоке
-        // НЕ сбрасываем currentStep! Оставляем на 6-м блоке
         document.body.style.overflow = 'auto';
         
         // Продолжаем скролл вниз
@@ -194,16 +277,24 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
       // Скролл вверх
       if (currentStep > 0) {
         console.log('Moving backward to previous step:', currentStep - 1);
+        setLastScrollDirection('up');
+        setIsScrolling(true); // Блокируем дальнейшие скроллы
         setCurrentStep(currentStep - 1);
         setRotationCount(prev => prev + 1);
+        // Разблокируем скролл через 1200ms для большей стабильности
+        setTimeout(() => {
+          setIsScrolling(false);
+          setLastScrollDirection(null); // Сбрасываем направление
+        }, 1200);
       } else {
-        // На первом (1-м) шаге - разрешаем скролл вверх и выходим из секции
-        console.log('At first step - allowing scroll up and EXIT section');
+        // На первом (1-м) шаге - ПОЛНОСТЬЮ ОТКЛЮЧАЕМ СЕКЦИЮ
+        console.log('At first step - COMPLETELY DISABLE section');
+        setIsCompletelyDisabled(true); // ПОЛНОЕ ОТКЛЮЧЕНИЕ!
         setIsLocked(false);
         setIsAnimationActive(false);
-        setRecentlyUnlocked(true);
+        setRecentlyUnlocked(false);
+        setIsMagnetizing(false);
         setFrozenPosition(0); // Замораживаем на 1-м блоке
-        // НЕ сбрасываем currentStep! Оставляем на 1-м блоке
         document.body.style.overflow = 'auto';
         
         // Продолжаем скролл вверх
@@ -212,11 +303,16 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
         });
       }
     }
-  }, [isLocked, isAnimationActive, currentStep, isFrozen]);
+  }, [isLocked, isAnimationActive, currentStep, isFrozen, isScrolling, lastScrollDirection, isCompletelyDisabled]);
 
   const handleScroll = useCallback(() => {
-    if (isLocked || recentlyUnlocked) {
-      console.log('Scroll blocked:', { isLocked, recentlyUnlocked });
+    // ПОЛНОЕ ОТКЛЮЧЕНИЕ СЕКЦИИ - просто выходим без каких-либо действий
+    if (isCompletelyDisabled) {
+      return;
+    }
+    
+    if (isLocked || recentlyUnlocked || isMagnetizing) {
+      console.log('Scroll blocked:', { isLocked, recentlyUnlocked, isMagnetizing });
       return;
     }
     
@@ -226,16 +322,17 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
     const rect = element.getBoundingClientRect();
     const viewportHeight = window.innerHeight;
     
-    // ОЧЕНЬ СТРОГАЯ проверка - секция должна быть ТОЧНО по центру экрана
+    // МАГНИТНАЯ АКТИВАЦИЯ - секция "притягивает" пользователя когда он рядом
     const sectionTop = rect.top;
     const sectionBottom = rect.bottom;
     const sectionHeight = rect.height;
     const sectionCenter = sectionTop + sectionHeight / 2;
     const viewportCenter = viewportHeight / 2;
     
-    // Секция должна занимать минимум 80% экрана и быть центрирована
-    const isNearCenter = Math.abs(sectionCenter - viewportCenter) < 50; // Только 50px отклонения
-    const isMostlyVisible = sectionTop < viewportHeight * 0.1 && sectionBottom > viewportHeight * 0.9;
+    // Более широкие условия для "захвата" - магнет должен работать каждый раз при приближении
+    const isPartiallyVisible = sectionTop < viewportHeight * 0.8 && sectionBottom > viewportHeight * 0.2;
+    const isCloseToCenter = Math.abs(sectionCenter - viewportCenter) < viewportHeight * 0.3; // В пределах 30% от центра
+    const shouldMagnetize = isPartiallyVisible && !isCloseToCenter && !isCompletelyDisabled;
     
     console.log('Scroll check:', { 
       sectionTop, 
@@ -243,14 +340,39 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
       sectionCenter,
       viewportCenter,
       distanceFromCenter: Math.abs(sectionCenter - viewportCenter),
-      isNearCenter,
-      isMostlyVisible,
-      shouldActivate: isNearCenter && isMostlyVisible
+      isPartiallyVisible,
+      isCloseToCenter,
+      isCompletelyDisabled,
+      shouldMagnetize
     });
     
-    // Активация ТОЛЬКО когда секция ТОЧНО центрирована И занимает почти весь экран
-    if (isNearCenter && isMostlyVisible) {
-      console.log('Activating scroll lock - section is PERFECTLY centered');
+    // МАГНИТНАЯ АКТИВАЦИЯ - притягиваем пользователя к центру секции
+    if (shouldMagnetize && !isMagnetizing) {
+      console.log('MAGNETIZING - pulling user to section center');
+      
+      // Устанавливаем флаг магнетизации чтобы избежать повторных срабатываний
+      setIsMagnetizing(true);
+      
+      // Вычисляем нужное смещение для центрирования секции
+      const distanceFromCenter = sectionCenter - viewportCenter;
+      const targetScrollY = window.scrollY + distanceFromCenter;
+      
+      console.log('Magnetize calculation:', { 
+        currentScrollY: window.scrollY,
+        sectionCenter,
+        viewportCenter,
+        distanceFromCenter,
+        targetScrollY
+      });
+      
+      // Плавно перемещаем к центру секции
+      window.scrollTo({
+        top: targetScrollY,
+        behavior: 'smooth'
+      });
+      
+      // Активируем секцию ПОСЛЕ центрирования
+      setTimeout(() => {
       
       // Сохраняем текущую позицию скролла ПЕРЕД блокировкой
       const scrollY = window.scrollY;
@@ -272,15 +394,23 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
         setCurrentStep(lastCompletedStep || 5); // По умолчанию 6-й блок
       }
       
-      // Блокируем скролл БЕЗ position: fixed (это вызывает прыжки)
+      // Сбрасываем состояние скроллинга для чистого старта
+      setIsScrolling(false);
+      setLastScrollDirection(null);
+      setIsMagnetizing(false); // Сбрасываем флаг магнетизации
+      
+      console.log('MAGNETIC ACTIVATION COMPLETE - section locked and centered');
+      
+      // Блокируем скролл БЗ position: fixed (это вызывает прыжки)
       document.body.style.overflow = 'hidden';
       
       // Сохраняем позицию для восстановления
       if (element) {
         element.dataset.savedScrollY = scrollY.toString();
       }
+      }, 300); // Задержка 300ms для завершения плавного скролла
     }
-  }, [isLocked, recentlyUnlocked, lastCompletedStep]);
+  }, [isLocked, recentlyUnlocked, lastCompletedStep, isMagnetizing, isCompletelyDisabled]);
 
   // Event listeners
   useEffect(() => {
@@ -327,11 +457,17 @@ function ScrollPinSectorContent({ isMobile = false }: ScrollPinSectorProps) {
         setIsFrozen(false);
         document.body.style.overflow = 'auto';
       }
+      
+      // Если секция ПОЛНОСТЬЮ вне видимости - сбрасываем полное отключение
+      if (isOutOfView && isCompletelyDisabled) {
+        console.log('Section completely out of view - ENABLE section again');
+        setIsCompletelyDisabled(false);
+      }
     };
     
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [isLocked, recentlyUnlocked, isFrozen]);
+  }, [isLocked, recentlyUnlocked, isFrozen, isCompletelyDisabled]);
 
   // Логирование изменений состояния
   useEffect(() => {
