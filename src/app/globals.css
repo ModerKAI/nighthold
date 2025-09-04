@@ -72,6 +72,11 @@ html {
   outline: none;
 }
 
+/* Шрифт Bowlby One SC для карточек прайсинга */
+.font-bowlby-one-sc {
+  font-family: var(--font-bowlby-one-sc), cursive;
+}
+
 /* Crypto grid + radial glows */
 
 

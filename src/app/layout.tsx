@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
+import { Geist, Geist_Mono, Press_Start_2P, Bowlby_One_SC } from "next/font/google";
 import "./globals.css";
 import ScrollProgress from "@/components/ScrollProgress";
 import TopBar from "@/components/TopBar";
@@ -18,6 +18,13 @@ const geistMono = Geist_Mono({
 
 const pressStart = Press_Start_2P({
   variable: "--font-press-start",
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const bowlbyOneSC = Bowlby_One_SC({
+  variable: "--font-bowlby-one-sc",
   weight: "400",
   subsets: ["latin"],
   display: "swap",
@@ -46,7 +53,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ru" className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable}`} suppressHydrationWarning>
+    <html lang="ru" className={`${geistSans.variable} ${geistMono.variable} ${pressStart.variable} ${bowlbyOneSC.variable}`} suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
         {/* Overlay для деликатного затемнения фонового изображения */}
         <div style={{position:'fixed',inset:0,zIndex:0,pointerEvents:'none',background:'rgba(10,10,26,0.82)'}} />

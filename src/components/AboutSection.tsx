@@ -245,28 +245,7 @@ const AboutSection: React.FC = () => {
           </div>
         </div>
 
-        {/* Bottom CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ delay: 1.7, duration: 0.8 }}
-          className="text-center mt-20"
-        >
-          <motion.div
-            animate={{ 
-              scale: [1, 1.2, 1],
-              textShadow: [
-                "0 0 0px #00FFC2",
-                "0 0 10px #00FFC2", 
-                "0 0 0px #00FFC2"
-              ]
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-cyberpunk-green font-bold text-lg"
-          >
-            ↓ Scroll Down ↓
-          </motion.div>
-        </motion.div>
+        {/* Bottom CTA - удалена надпись "Scroll Down" */}
       </div>
     </motion.section>
   );

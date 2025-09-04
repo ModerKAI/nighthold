@@ -87,7 +87,7 @@ export default function CommunityPricingSection({ isMobile = false }: CommunityP
     <motion.section
       ref={sectionRef}
       id="section-6"
-      className="min-h-screen w-full relative overflow-hidden pt-48 pb-20 md:pt-64 md:pb-32 text-cyberpunk-neon"
+      className="min-h-screen w-full relative overflow-hidden pt-64 pb-20 md:pt-80 md:pb-32 text-cyberpunk-neon"
       initial={{ 
         opacity: 0,
         y: 100,
@@ -239,7 +239,7 @@ export default function CommunityPricingSection({ isMobile = false }: CommunityP
                 {/* Plan Header */}
                 <div className="relative z-10 text-center mb-8">
                   <motion.h3 
-                    className={`text-2xl md:text-3xl font-bold mb-2
+                    className={`text-2xl md:text-3xl font-bold mb-2 font-bowlby-one-sc
                       ${plan.popular ? 'text-yellow-300 drop-shadow-[0_0_8px_rgba(255,215,0,0.3)]' : 'text-cyan-300'}
                     `}
                     animate={hoveredCard === index ? { scale: 1.05 } : { scale: 1 }}
@@ -247,7 +247,7 @@ export default function CommunityPricingSection({ isMobile = false }: CommunityP
                   >
                     {plan.name}
                   </motion.h3>
-                  <p className="text-cyberpunk-neon/70 mb-6">
+                  <p className="text-cyberpunk-neon/70 mb-6 font-bowlby-one-sc">
                     {plan.description}
                   </p>
                   <motion.div 
@@ -255,12 +255,12 @@ export default function CommunityPricingSection({ isMobile = false }: CommunityP
                     animate={hoveredCard === index ? { y: -5 } : { y: 0 }}
                     transition={{ duration: 0.3 }}
                   >
-                    <span className={`text-4xl md:text-5xl font-bold
+                    <span className={`text-4xl md:text-5xl font-bold font-bowlby-one-sc
                       ${plan.popular ? 'text-yellow-300 drop-shadow-[0_0_10px_rgba(255,215,0,0.4)]' : 'text-cyan-300'}
                     `}>
                       ${plan.price}
                     </span>
-                    <span className="text-cyberpunk-neon/60 ml-2">/{plan.period}</span>
+                    <span className="text-cyberpunk-neon/60 ml-2 font-bowlby-one-sc">/{plan.period}</span>
                   </motion.div>
                 </div>
 
@@ -282,7 +282,7 @@ export default function CommunityPricingSection({ isMobile = false }: CommunityP
                       >
                         <span className="text-cyberpunk-dark text-xs font-bold">✓</span>
                       </motion.div>
-                      <span className="text-cyberpunk-neon/90">{feature}</span>
+                      <span className="text-cyberpunk-neon/90 font-bowlby-one-sc">{feature}</span>
                     </motion.div>
                   ))}
                 </div>
@@ -308,7 +308,7 @@ export default function CommunityPricingSection({ isMobile = false }: CommunityP
                     whileTap={{ scale: 0.95 }}
                     animate={hoveredCard === index ? { y: -5 } : { y: 0 }}
                   >
-                    <span className="relative z-10 font-extrabold tracking-wide">Get Started Now</span>
+                    <span className="relative z-10 font-extrabold tracking-wide font-bowlby-one-sc">Get Started Now</span>
                     {/* Button hover effect */}
                     <motion.div
                       className={`absolute inset-0 ${
